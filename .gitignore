@@ -1,0 +1,15 @@
+.DS_Store
+config*.yml
+configs/config_*.yml
+configs/qsub.history
+.snakemake
+\#*
+__pycache__
+tests/sunbeam_output
+tests/bacteria
+tests/local
+tests/data_files
+configs/respublica_config.yml
+*.yml
+*.yaml
+*.egg-*

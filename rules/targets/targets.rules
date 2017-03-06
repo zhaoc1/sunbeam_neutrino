@@ -1,0 +1,25 @@
+# -*- mode: Snakemake -*-
+#
+# list the all input files for each step
+
+####################
+## qc
+####################
+
+### Quality-control reads
+TARGET_QC = expand(str(QC_FP/'paired'/'{sample}_{rp}_fastqc.zip'), sample = Samples.keys(), rp = ['R1','R2'])
+
+### Remove host reads
+TARGET_DECONTAM = expand(str(QC_FP/'decontam'/'{sample}_{rp}.fastq'), sample = Samples.keys(), rp = ['R1', 'R2'])
+
+
+####################
+## mapping
+####################
+
+## KEGG pathway finder
+TARGET_PATH = expand(str(MAPPING_FP/'summary'/'pathfinder'/'{sample}_summary.json'), sample=Samples.keys())
+TARGET_REPORT = [str(MAPPING_FP/'ko_assignments.tsv')]
+
+TARGET_ALL = TARGET_DECONTAM + TARGET_PATH + TARGET_REPORT
+

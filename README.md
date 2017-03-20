@@ -1,4 +1,4 @@
-# sunbeam_addon
+# sunbeam_neutrino
 Downstream analysis after using sunbeam pipeline.
 
 ### Environment setup

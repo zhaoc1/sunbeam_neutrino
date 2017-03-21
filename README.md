@@ -28,6 +28,6 @@ unset PYTHONHOME
 unset PYTHONPATH
 source activate sunbeam
 
-snakemake -j 8 --cluster-config configs/cluster.json -p -c "qsub -cwd -r n -V -l h_vmem={cluster.h_vmem} -l mem_free={cluster.mem_free} -pe smp {threads}"
+snakemake -j 40 --configfile config_X.yml --cluster-config configs/cluster.json -w 90 --notemp -p -c "qsub -cwd -r n -V -l h_vmem={cluster.h_vmem} -l mem_free={cluster.mem_free} -pe smp {threads}"
 
 ```

@@ -1,5 +1,12 @@
 # -*- mode: Snakemake -*-
 
+from pathlib import Path, PurePath
+
+GENOME_DIR = Cfg['mapping']['genomes_fp']
+GENOMES_KEY = [PurePath(f.name).stem for f in GENOME_DIR.glob('*.fna')]
+GENOMES_VAL = [str(GENOME_DIR) + '/' + g+'.fna' for g in GENOMES_KEY]
+GENOMES_DICT = dict(zip(GENOMES_KEY, GENOMES_VAL))
+
 def bt2_index_files(genome, idx_fp):
     fwd = expand('{idx_fp}/{genome}.{index}.bt2',
                  genome=genome,
@@ -11,25 +18,33 @@ def bt2_index_files(genome, idx_fp):
                  index=range(1,3))
     return fwd + rev
 
-rule bt2_index:
-    output:
-        bt2_index_files('{genome}', Cfg['mapping']['genomes_fp'])
-    params:
-        idx_fp = str(Cfg['mapping']['genomes_fp'])
-    shell:
-        "bowtie2-build {params.idx_fp}/{wildcards.genome}.fa {params.idx_fp}/{wildcards.genome}"
+rule _test_bt2_index:
+    input:
+        expand(str(GENOME_DIR/'{genome}.{s}.bt2'), genome=GENOMES_DICT.keys(), s=['1','2','3','4','rev.1','rev.2'])
 
-rule bt2_map_contigs:
+rule bt2_index:
+    input:
+        lambda wildcards: GENOMES_DICT[wildcards.genome]
+    output:
+        expand(str(GENOME_DIR/'{{genome}}.{s}.bt2'), s=['1','2','3','4','rev.1','rev.2'])
+    params:
+        prefix=str(GENOME_DIR/'{genome}')
+    shell:
+        "bowtie2-build {input} {params.prefix}"
+
+rule bt2_align:
     input:
         lambda wildcards: bt2_index_files(wildcards.genome, Cfg['mapping']['genomes_fp']),
         r1 = str(QC_FP/'decontam'/'{sample}_R1.fastq'),
         r2 = str(QC_FP/'decontam'/'{sample}_R2.fastq')
     output:
         temp(str(MAPPING_FP/'{genome}'/'{sample}/reads.sam'))
+    threads:
+        Cfg['mapping']['threads']
     params:
-        idx=str(Cfg['mapping']['genomes_fp']/'{genome}')
+        index=str(Cfg['mapping']['genomes_fp']/'{genome}')
     shell:
-        "bowtie2 -x {params.idx} -1 {input.r1} -2 {input.r2} -S {output} -p {Cfg[all][subcores]}"
+        "bowtie2 -x {params.index} -1 {input.r1} -2 {input.r2} -S {output} -p {threads}"
 
 rule sam_to_bam:
     input: "{fname}.sam"
@@ -46,6 +61,14 @@ rule index_bam:
     output: "{fname}.sorted.bam.bai"
     shell: "samtools index {input}"
 
+rule bam_mpileup:
+    input:
+        bam = "{fname}.sorted.bam",
+        genome = str(GENOME_DIR/"{genome}.fna")
+    output: "{fname}.raw.bcf"
+    shell: 
+        "samtools mpileup -uf {input.genome} {input.bam} | bcftools view -bvcg - > {output}"
+
 rule bam_stats:
     input:
         bam="{fname}.sorted.bam",
@@ -53,14 +76,21 @@ rule bam_stats:
     output: "{fname}.stats"
     shell: "samtools stats {input.bam} > {output}"
 
-
 rule _map_all:
     input:
         expand(
-            str(MAPPING_FP/'t_gondii'/'{sample}'/'reads.stats'),
-            sample=Samples.keys())
-           
-rule _test_bt2:
+            str(MAPPING_FP/'{genome}'/'{sample}'/'{sample}.reads.coverage.pdf'),
+            sample=Samples.keys(), genome=GENOMES_DICT.keys())
+
+rule plot_coverage:
     input:
-        expand(str(MAPPING_FP/'t_gondii_COUG'/'{sample}/reads.stats'),
-               sample='Sample2c_S30')
+        s = str(MAPPING_FP/'{genome}'/'{sample}'/'reads.sorted.bam')
+    output:
+        f = str(MAPPING_FP/'{genome}'/'{sample}'/'{sample}.reads.coverage.pdf')
+    params:
+        t = str(MAPPING_FP/'{genome}'/'{sample}'/'reads.coverage')
+    shell:
+        """
+        samtools depth {input.s} > {params.t}
+        Rscript script.R {params.t} {output.f}
+        """

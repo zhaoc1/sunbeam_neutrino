@@ -1,0 +1,62 @@
+# -*- mode: Snakemake -*-
+#
+# Reads mapping to BAI and BSH genes:
+#	Rules for BLASTing against databases
+
+
+from pathlib import Path, PurePath
+
+GENES_DIR = Cfg['mapping']['bileacid_fp']
+GENES_KEY = [PurePath(f.name).stem for f in GENES_DIR.glob('*.fasta')]
+GENES_VAL = [str(GENES_DIR) + '/' + g+'.fasta' for g in GENES_KEY]
+GENES_DICT = dict(zip(GENES_KEY, GENES_VAL))
+print(GENES_DICT)
+
+rule _test_build_db:
+    input:
+        expand(str(GENES_DIR/'{gene}.fasta.{index}'), index=['nsq','nin','nhr'], gene=GENES_DICT.keys())
+
+rule build_blastdb:
+    message: "build blast databases"
+    input:
+        lambda wildcards: GENES_DICT[wildcards.gene]
+    output:
+        expand(str(GENES_DIR/'{{gene}}.fasta.{index}'), index=['nsq','nin','nhr'])
+    shell:
+        "makeblastdb -in {input} -dbtype nucl"
+
+rule merge_fastqs:
+    message: "merge paired fastq reads into fasta"
+    input:
+        r1 = str(QC_FP/'decontam'/'{sample}_R1.fastq'),
+        r2 = str(QC_FP/'decontam'/'{sample}_R2.fastq')
+    output:
+        str(MAPPING_FP/'merged_reads'/'{sample}_merged.fasta')
+    shell: "fq2fa --merge --filter {input.r1} {input.r2} {output}"
+
+
+rule read_blastn:
+    message: "run blastn against a given database and write the results into tabular"
+    input:
+        read=str(MAPPING_FP/'merged_reads'/'{sample}_merged.fasta'),
+        db = expand(str(GENES_DIR/'{{gene}}.fasta.{index}'), index=['nsq','nin','nhr'])
+    output:
+        str(MAPPING_FP/'{gene}'/'{sample}.blastn')
+    params:
+        db=lambda wildcard: GENES_DICT[wildcard.gene]
+    threads: 
+        Cfg['blast']['threads']
+    shell:
+        """
+        blastn \
+        -query {input.read} \
+        -db {params.db} \
+        -outfmt 6 \
+        -num_threads {threads} \
+        -evalue 1e-10 \
+        -out {output} \
+        """
+
+rule _all_blast:
+    input:
+        expand(str(MAPPING_FP/'blastn'/'{gene}'/'{sample}.txt'), gene=GENES_DICT.keys(), sample=Samples.keys())

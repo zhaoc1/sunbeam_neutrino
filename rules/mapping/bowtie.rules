@@ -38,11 +38,11 @@ rule bt2_align:
         r1 = str(QC_FP/'decontam'/'{sample}_R1.fastq'),
         r2 = str(QC_FP/'decontam'/'{sample}_R2.fastq')
     output:
-        temp(str(MAPPING_FP/'{genome}'/'{sample}/reads.sam'))
+        temp(str(MAPPING_FP/'bowtie'/'{genome}'/'{sample}/reads.sam'))
     threads:
         Cfg['mapping']['threads']
     params:
-        index=str(Cfg['mapping']['genomes_fp']/'{genome}')
+        index=str(GENOME_DIR/'{genome}')
     shell:
         "bowtie2 -x {params.index} -1 {input.r1} -2 {input.r2} -S {output} -p {threads}"
 
@@ -79,18 +79,19 @@ rule bam_stats:
 rule _map_all:
     input:
         expand(
-            str(MAPPING_FP/'{genome}'/'{sample}'/'{sample}.reads.coverage.pdf'),
+            str(MAPPING_FP/'bowtie'/'{genome}'/'{sample}'/'{sample}.reads.coverage.pdf'),
             sample=Samples.keys(), genome=GENOMES_DICT.keys())
 
 rule plot_coverage:
     input:
-        s = str(MAPPING_FP/'{genome}'/'{sample}'/'reads.sorted.bam')
+        s = str(MAPPING_FP/'bowtie'/'{genome}'/'{sample}'/'reads.sorted.bam'),
+        Rscript = str(Cfg['mapping']['Rscript'])
     output:
-        f = str(MAPPING_FP/'{genome}'/'{sample}'/'{sample}.reads.coverage.pdf')
+        f = str(MAPPING_FP/'bowtie'/'{genome}'/'{sample}'/'{sample}.reads.coverage.pdf')
     params:
-        t = str(MAPPING_FP/'{genome}'/'{sample}'/'reads.coverage')
+        t = str(MAPPING_FP/'bowtie'/'{genome}'/'{sample}'/'reads.coverage')
     shell:
         """
         samtools depth {input.s} > {params.t}
-        Rscript script.R {params.t} {output.f}
+        Rscript {input.Rscript} {params.t} {output.f}
         """

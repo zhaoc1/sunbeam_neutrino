@@ -39,10 +39,6 @@ MAPPING_FP = output_subdir(Cfg, 'mapping')
 # ---- Targets rules
 include: "rules/targets/targets.rules"
 
-# ---- Quality control rules
-include: "rules/qc/qc.rules"
-include: "rules/qc/decontaminate.rules"
-
 # ---- Antibiotic resistance gene rules
 #include: "rules/abx/abx_genes.rules"
 

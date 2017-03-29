@@ -80,8 +80,10 @@ rule _map_all:
     input:
         expand(
             str(MAPPING_FP/'bowtie'/'{genome}'/'{sample}'/'{sample}.reads.coverage.pdf'),
+            sample=Samples.keys(), genome=GENOMES_DICT.keys()),
+        expand(
+            str(MAPPING_FP/'bowtie'/'{genome}'/'{sample}'/'reads.stats'),
             sample=Samples.keys(), genome=GENOMES_DICT.keys())
-
 rule plot_coverage:
     input:
         s = str(MAPPING_FP/'bowtie'/'{genome}'/'{sample}'/'reads.sorted.bam'),

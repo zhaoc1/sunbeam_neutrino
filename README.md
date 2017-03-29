@@ -4,7 +4,7 @@ Downstream analysis after using sunbeam pipeline.
 ### Environment setup
 Do this once:
 ```
-sourcee activate sunbeam
+source activate sunbeam
 
 # conda only keep track of the packages it installed. 
 pip install git+https://github.com/zhaoc1/PathwayAbundanceFinder.git

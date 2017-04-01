@@ -19,6 +19,14 @@ To updated the requirements file (after installing some new package):
 conda list --name sunbeam --explicit > requirements.txt
 ```
 
+### Functional testing
+
+```
+cd sunbeam_neutrino
+bash tests/test.sh /path/to/test/datadir
+
+```
+
 ### Run on respublica
 
 May need to unset PYTHONHOME for first time users.

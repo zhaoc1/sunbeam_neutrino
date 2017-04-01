@@ -20,7 +20,8 @@ def main():
     """Create a blank config file with the given name."""
 
     conda_fp = _find_conda_fp()
-     
+    print("MAIN")
+ 
     parser = ArgumentParser(
         "init", description="Initialize a new sunbeam project")
     parser.add_argument("project_fp", help="Project root directory")
@@ -47,3 +48,4 @@ def main():
     
     sys.stdout.write(config)
 
+main()

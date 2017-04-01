@@ -1,3 +1,10 @@
+mapping/pathfinder/dummybfragilis.ko
+mapping/pathfinder/dummyecoli.ko
+mapping/blastn/Jan2017_all_bai/dummybfragilis_R1.blastn
+mapping/blastn/Jan2017_all_bai/dummyecoli_R1.blastn
+mapping/bowtie/GCA_000328385.1_Cuti_1.0_genomic/dummybfragilis/dummybfragilis.reads.coverage.pdf
+mapping/bowtie/GCA_000328385.1_Cuti_1.0_genomic/dummyecoli/dummyecoli.reads.coverage.pdf
+
 annotation/blastn/bacteria/contig/dummybfragilis.xml
 annotation/blastn/bacteria/contig/dummyecoli.xml
 
@@ -21,3 +28,4 @@ qc/paired/dummybfragilis_R1.fastq.gz
 qc/paired/dummybfragilis_R2.fastq.gz
 qc/paired/dummyecoli_R1.fastq.gz
 qc/paired/dummyecoli_R2.fastq.gz
+

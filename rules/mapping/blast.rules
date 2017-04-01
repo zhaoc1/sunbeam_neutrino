@@ -43,7 +43,7 @@ rule fq2fa:
         "fq2fa {input} {output}"
 
 rule read_blastn:
-    message: "run blastn against a given database and write the results into tabular"
+    #message: "run blastn against a given database and write the results into tabular"
     input:
         read = str(MAPPING_FP/'R1'/'{sample}_R1.fasta'),
         #read=str(MAPPING_FP/'merged_reads'/'{sample}_merged.fasta'),

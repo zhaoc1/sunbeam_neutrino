@@ -1,5 +1,4 @@
 .DS_Store
-config*.yml
 configs/config_*.yml
 configs/qsub.history
 .snakemake

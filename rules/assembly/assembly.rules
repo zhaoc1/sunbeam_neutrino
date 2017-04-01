@@ -1,0 +1,97 @@
+# -*- mode: Snakemake -*-
+#
+# Contig building and other assembly rules
+#
+# Requires IDBA_UD and CAP3.
+
+rule all_assembly:
+    """Build contigs for all samples."""
+    input:
+        TARGET_ASSEMBLY
+
+rule merge_fq:
+    input:
+        r1 = str(QC_FP/'decontam'/'{sample}_R1.fastq'),
+        r2 = str(QC_FP/'decontam'/'{sample}_R2.fastq')
+    output:
+        str(ASSEMBLY_FP/'merged_reads'/'{sample}_merged.fasta')
+    shell: "fq2fa --merge --filter {input.r1} {input.r2} {output}"
+
+
+rule idba_ud:
+    input:
+        str(ASSEMBLY_FP/'merged_reads'/'{sample}_merged.fasta')
+    output:
+    	str(ASSEMBLY_FP/'idba_ud'/'{sample}'/'contig.fa')
+    log:
+        str(ASSEMBLY_FP/'log'/'idba_ud'/'{sample}.out')
+    params:
+        out_fp = str(ASSEMBLY_FP/'idba_ud'/'{sample}')
+    threads:
+        Cfg['assembly']['threads']
+    shell:
+        """
+        idba_ud -l {input} -o {params.out_fp} \
+        --num_threads {threads} --pre_correction &> {log} || \
+        if [ ! -a {output} ]; then cp {params.out_fp}/contig-100.fa {output}; fi
+        """
+
+rule cap3:
+    input:
+        contig = str(ASSEMBLY_FP/'idba_ud'/'{sample}'/'contig.fa'),
+        cap3 = str(Cfg['assembly']['cap3_fp']/'cap3')
+    output:
+        str(ASSEMBLY_FP/'cap3'/'{sample}'/'cap3-contigs.fa')
+    log:
+        str(ASSEMBLY_FP/'log'/'cap3'/'{sample}.out')
+    shell:
+        """
+        {input.cap3} {input.contig} &> {log} && \
+        cat {input.contig}.cap.singlets {input.contig}.cap.contigs > {output}
+        """
+
+rule save_intermediates:
+    input:
+        I = str(ASSEMBLY_FP/'idba_ud'/'{sample}'/'contig.fa'),
+        C = str(ASSEMBLY_FP/'cap3'/'{sample}'/'cap3-contigs.fa')
+    output:
+        I = str(ASSEMBLY_FP/'{sample}_assembly'/'contig.fa'),
+        C = str(ASSEMBLY_FP/'{sample}_assembly'/'cap3-contigs.fa'),
+        sentinel = str(ASSEMBLY_FP/'{sample}_assembly'/'.save')
+    shell:
+        """
+        cp {input.I} {output.I} && cp {input.C} {output.C} && \
+        touch {output.sentinel}
+        """
+
+rule final_filter:
+    input:
+        str(ASSEMBLY_FP/'{sample}_assembly'/'cap3-contigs.fa')
+    output:
+        str(ASSEMBLY_FP/'{sample}_assembly'/'final-contigs.fa')
+    params:
+        len = Cfg['assembly']['min_length']
+    log:
+        str(ASSEMBLY_FP/'log'/'vsearch'/'{sample}.log')
+    run:
+        filename = os.path.basename(input[0])
+        shell(
+        """
+        vsearch --sortbylength {input} \
+        --relabel {filename} --minseqlength {params.len} \
+        --output {input}.{params.len}f &> {log} && \
+        cp {input}.{params.len}f {output}
+        """)
+
+rule clean_assembly:
+    input:
+        I = str(ASSEMBLY_FP/'idba_ud'),
+        C = str(ASSEMBLY_FP/'cap3'),
+        M = str(ASSEMBLY_FP/'merged_reads')
+    shell:
+        """
+        rm -rf {input.I} && \
+        rm -rf {input.C} && \
+        rm -rf {input.M} && \
+        echo "Cleanup assembly finished."
+        """

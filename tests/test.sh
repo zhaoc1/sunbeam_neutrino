@@ -5,13 +5,20 @@ set -e # Stop on errors
 # Ensure we can activate the environment
 export PATH=$PATH:$HOME/miniconda3/bin
 
+# Set up paths
+ROOT=`pwd`
+
+if [ $# -ne 1 ]; then
+    echo "Write test output to temp file"
+    TEMPDIR=`mktemp -d`
+else
+    TEMPDIR="$1"
+fi
+
 # Activate the sunbeam environment
 source activate sunbeam
 command -v snakemake
 
-# Set up paths
-ROOT=`pwd`
-TEMPDIR=`mktemp -d`
 mkdir -p $TEMPDIR/data_files
 
 function cleanup {
@@ -21,7 +28,7 @@ function cleanup {
 }
 
 # Calls cleanup when the script exits
-trap cleanup EXIT
+#trap cleanup EXIT
 
 pushd tests
 # Copy data into the temporary directory
@@ -29,7 +36,8 @@ cp -r ../local $TEMPDIR/local
 cp -r indexes $TEMPDIR
 cp -r raw $TEMPDIR
 cp -r truncated_taxonomy $TEMPDIR
-cp -r indexes $TEMPDIR
+#FIXME
+#cp -r indexes $TEMPDIR
 python generate_dummy_data.py $TEMPDIR
 
 # Create a version of the config file customized for this tempdir
@@ -53,7 +61,7 @@ popd
 
 # Running snakemake
 echo "Now testing snakemake: "
-snakemake --configfile=$TEMPDIR/tmp_config.yml
+snakemake --configfile=$TEMPDIR/tmp_config.yml -p
 snakemake --configfile=$TEMPDIR/tmp_config.yml clean_assembly
 
 # Check contents
@@ -65,19 +73,3 @@ python tests/find_targets.py --prefix $TEMPDIR/sunbeam_output tests/targets.txt
 
 # Bugfix/feature tests: add as needed
 
-# Fix for #38: Make Cutadapt optional
-# -- Remove adapter sequences and check to make sure qc proceeds correctly
-sed 's/adapters: \[.*\]/adapters: \[\]/g' $TEMPDIR/tmp_config.yml > $TEMPDIR/tmp_config_nocutadapt.yml
-rm -rf $TEMPDIR/sunbeam_output/qc
-snakemake --configfile=$TEMPDIR/tmp_config_nocutadapt.yml all_decontam
-[ -f $TEMPDIR/sunbeam_output/qc/decontam/dummyecoli_R1.fastq ]
-[ -f $TEMPDIR/sunbeam_output/qc/decontam/dummyecoli_R2.fastq ]
-
-# Test for barcodes file
-sed 's/data_fp: data_files/data_fp: barcodes.txt/g' $TEMPDIR/tmp_config.yml > $TEMPDIR/tmp_config_barcode.yml
-echo -e "dummybfragilis\tTTTTTTTT\ndummyecoli\tTTTTTTTT" > $TEMPDIR/barcodes.txt
-rm -rf $TEMPDIR/data_files
-rm -rf $TEMPDIR/sunbeam_output/qc/decontam*
-snakemake --configfile=$TEMPDIR/tmp_config_barcode.yml all_decontam
-[ -f $TEMPDIR/sunbeam_output/qc/decontam/dummyecoli_R1.fastq ]
-[ -f $TEMPDIR/sunbeam_output/qc/decontam/dummyecoli_R2.fastq ]

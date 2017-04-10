@@ -18,3 +18,5 @@ cutadapt
 pysam
 pandas
 seqtk
+bedtools
+bowtie2

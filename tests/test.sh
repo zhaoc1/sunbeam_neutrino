@@ -16,7 +16,7 @@ else
 fi
 
 # Activate the sunbeam environment
-source activate sunbeam
+source activate sunbeam-dev
 command -v snakemake
 
 mkdir -p $TEMPDIR/data_files
@@ -70,6 +70,4 @@ grep 'NC_006347.1' $TEMPDIR/sunbeam_output/annotation/summary/dummybfragilis.tsv
 
 # Check targets
 python tests/find_targets.py --prefix $TEMPDIR/sunbeam_output tests/targets.txt 
-
-# Bugfix/feature tests: add as needed
 

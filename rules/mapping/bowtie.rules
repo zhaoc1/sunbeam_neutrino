@@ -3,8 +3,8 @@
 from pathlib import Path, PurePath
 
 GENOME_DIR = Cfg['mapping']['genomes_fp']
-GENOMES_KEY = [PurePath(f.name).stem for f in GENOME_DIR.glob('*.fna')]
-GENOMES_VAL = [str(GENOME_DIR) + '/' + g+'.fna' for g in GENOMES_KEY]
+GENOMES_KEY = [PurePath(f.name).stem for f in GENOME_DIR.glob('*.fasta')]
+GENOMES_VAL = [str(GENOME_DIR) + '/' + g+'.fasta' for g in GENOMES_KEY]
 GENOMES_DICT = dict(zip(GENOMES_KEY, GENOMES_VAL))
 
 def bt2_index_files(genome, idx_fp):
@@ -61,28 +61,31 @@ rule index_bam:
     output: "{fname}.sorted.bam.bai"
     shell: "samtools index {input}"
 
-rule bam_mpileup:
+rule bam_read_counts:
     input:
-        bam = "{fname}.sorted.bam",
-        genome = str(GENOME_DIR/"{genome}.fna")
-    output: "{fname}.raw.bcf"
-    shell: 
-        "samtools mpileup -uf {input.genome} {input.bam} | bcftools view -bvcg - > {output}"
+        bam=str(MAPPING_FP/'bowtie'/'{genome}'/'{sample}'/'reads.sorted.bam'),
+        bai=str(MAPPING_FP/'bowtie'/'{genome}'/'{sample}'/'reads.sorted.bam.bai')
+    output:
+        str(MAPPING_FP/'bowtie'/'{genome}'/'summary'/'{sample}_counts')
+    shell:
+        "samtools idxstats {input.bam} | cut -f 1,3 | sed '$ d' > {output}"
 
-rule bam_stats:
+rule bam_coverage:
     input:
-        bam="{fname}.sorted.bam",
-        bai="{fname}.sorted.bam.bai"
-    output: "{fname}.stats"
-    shell: "samtools stats {input.bam} > {output}"
+        bam = str(MAPPING_FP/'bowtie'/'{genome}'/'{sample}'/'reads.sorted.bam'),
+        genome = str(GENOME_DIR/"{genome}.fasta")
+    output: 
+        str(MAPPING_FP/'bowtie'/'{genome}'/'summary'/'{sample}_coverage')
+    shell: 
+        "bedtools genomecov -ibam {input.bam} -g {input.genome} -bg > {output}"
 
 rule _map_all:
     input:
         expand(
-            str(MAPPING_FP/'bowtie'/'{genome}'/'{sample}'/'{sample}.reads.coverage.pdf'),
+            str(MAPPING_FP/'bowtie'/'{genome}'/'summary'/'{sample}_counts'),
             sample=Samples.keys(), genome=GENOMES_DICT.keys()),
         expand(
-            str(MAPPING_FP/'bowtie'/'{genome}'/'{sample}'/'reads.stats'),
+            str(MAPPING_FP/'bowtie'/'{genome}'/'summary'/'{sample}_coverage'),
             sample=Samples.keys(), genome=GENOMES_DICT.keys())
 
 rule plot_coverage:
@@ -90,7 +93,7 @@ rule plot_coverage:
         s = str(MAPPING_FP/'bowtie'/'{genome}'/'{sample}'/'reads.sorted.bam'),
         Rscript = str(Cfg['mapping']['Rscript_fp']/'script.R')
     output:
-        f = str(MAPPING_FP/'bowtie'/'{genome}'/'{sample}'/'{sample}.reads.coverage.pdf')
+        f = str(MAPPING_FP/'bowtie'/'{genome}'/'{sample}'/'{sample}.coverage.pdf')
     params:
         t = str(MAPPING_FP/'bowtie'/'{genome}'/'{sample}'/'reads.coverage')
     shell:

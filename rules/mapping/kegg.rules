@@ -9,7 +9,7 @@ from io import StringIO
 
 rule all_path:
     input:
-        TARGET_PATH
+        TARGET_PATH+TARGET_PATHREPORT
 
 rule path_finder:
     """Find presence/absence/abundance of pathways from metagenomic data."""    

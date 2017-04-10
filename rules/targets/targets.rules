@@ -60,11 +60,13 @@ TARGET_BLAST = expand(str(MAPPING_FP/'blastn'/'{gene}'/'{sample}_R1.blastn'),
 
 ## BOWTIE mapping
 TARGET_BOWTIE = (
-    expand(str(MAPPING_FP/'bowtie'/'{genome}'/'{sample}'/'{sample}.reads.coverage.pdf'),
-           sample=Samples.keys(), genome=GENOMES_DICT.keys()) + 
-    expand(str(MAPPING_FP/'bowtie'/'{genome}'/'{sample}'/'reads.stats'),
-           sample=Samples.keys(), genome=GENOMES_DICT.keys()))
-
+     expand(
+            str(MAPPING_FP/'bowtie'/'{genome}'/'summary'/'{sample}_counts'),
+            sample=Samples.keys(), genome=GENOMES_DICT.keys()) +
+     expand(
+            str(MAPPING_FP/'bowtie'/'{genome}'/'summary'/'{sample}_coverage'),
+            sample=Samples.keys(), genome=GENOMES_DICT.keys()))
+    
 TARGET_MAPPING = TARGET_PATH + TARGET_PATHREPORT + TARGET_BLAST + TARGET_BOWTIE
 
 

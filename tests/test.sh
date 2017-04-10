@@ -36,12 +36,12 @@ cp -r ../local $TEMPDIR/local
 cp -r indexes $TEMPDIR
 cp -r raw $TEMPDIR
 cp -r truncated_taxonomy $TEMPDIR
-#FIXME
-#cp -r indexes $TEMPDIR
+
 python generate_dummy_data.py $TEMPDIR
 
 # Create a version of the config file customized for this tempdir
-sunbeam_init $TEMPDIR | python prep_config_file.py > $TEMPDIR/tmp_config.yml
+CONFIG_FP=~/miniconda3/envs/sunbeam/lib/python3.5/site-packages/sunbeamlib/data/default_config.yml
+sunbeam_init $TEMPDIR | python prep_config_file.py  > $TEMPDIR/tmp_config.yml
 
 popd
 

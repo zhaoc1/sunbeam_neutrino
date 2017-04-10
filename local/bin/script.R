@@ -1,6 +1,6 @@
 args <- commandArgs(trailingOnly = TRUE)
 
-#setwd("/mnt/isilon/aplenc/data/R/")
+#setwd("/home/zhaoc1/data/R/")
 #getwd()
 
 library(tools)

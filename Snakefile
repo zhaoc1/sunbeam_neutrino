@@ -46,8 +46,8 @@ MAPPING_FP = output_subdir(Cfg, 'mapping')
 
 # ---- Other patameters
 GENOME_DIR = Cfg['mapping']['genomes_fp']
-GENOMES_KEY = [PurePath(f.name).stem for f in GENOME_DIR.glob('*.fna')]
-GENOMES_VAL = [str(GENOME_DIR) + '/' + g+'.fna' for g in GENOMES_KEY]
+GENOMES_KEY = [PurePath(f.name).stem for f in GENOME_DIR.glob('*.fasta')]
+GENOMES_VAL = [str(GENOME_DIR) + '/' + g+'.fasta' for g in GENOMES_KEY]
 GENOMES_DICT = dict(zip(GENOMES_KEY, GENOMES_VAL))
 
 

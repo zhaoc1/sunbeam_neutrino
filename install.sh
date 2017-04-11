@@ -4,7 +4,7 @@ set -e
 
 PREFIX=$HOME/miniconda3
 
-SUNBEAM_ENV_NAME=${1-sunbeam-dev}
+SUNBEAM_ENV_NAME=${1-sunbeam-neutrino}
 
 install_conda () {
     wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
@@ -23,10 +23,10 @@ conda config --add channels eclarke
 conda env list | grep -Fxq $SUNBEAM_ENV_NAME || {
     conda create --name=$SUNBEAM_ENV_NAME --file=requirements.txt --yes;
     source activate $SUNBEAM_ENV_NAME
-    pip install -e .
+    pip install  ../sunbeam  #-e create symlink to the sunbeamlib
     pip install git+https://github.com/eclarke/decontam.git
     pip install git+https://github.com/zhaoc1/PathwayAbundanceFinder.git
-    echo "Sunbeam successfully installed.";
+    echo "Sunbeam-neutrino successfully installed.";
 }
 
 echo "To get started, ensure ${PREFIX}/bin is in your path and run 'source activate $SUNBEAM_ENV_NAME'"

@@ -4,12 +4,10 @@
 #	Rules for BLASTing against databases
 
 
-from pathlib import Path, PurePath
-
-GENES_DIR = Cfg['mapping']['bileacid_fp']
-GENES_KEY = [PurePath(f.name).stem for f in GENES_DIR.glob('*.fasta')]
-GENES_VAL = [str(GENES_DIR) + '/' + g+'.fasta' for g in GENES_KEY]
-GENES_DICT = dict(zip(GENES_KEY, GENES_VAL))
+rule _blast_all:
+    input:
+        expand(str(MAPPING_FP/'blastn'/'{gene}'/'{sample}_R1.blastn'), 
+               gene=GENES_DICT.keys(), sample=Samples.keys())
 
 rule _test_build_db:
     input:
@@ -24,15 +22,6 @@ rule build_blastdb:
     shell:
         "makeblastdb -in {input} -dbtype nucl"
 
-rule merge_fastqs:
-    message: "merge paired fastq reads into fasta"
-    input:
-        r1 = str(QC_FP/'decontam'/'{sample}_R1.fastq'),
-        r2 = str(QC_FP/'decontam'/'{sample}_R2.fastq')
-    output:
-        str(MAPPING_FP/'merged_reads'/'{sample}_merged.fasta')
-    shell: "fq2fa --merge --filter {input.r1} {input.r2} {output}"
-
 rule fq2fa:
     message: "convert fastq files into fasta files"
     input:
@@ -46,7 +35,6 @@ rule read_blastn:
     #message: "run blastn against a given database and write the results into tabular"
     input:
         read = str(MAPPING_FP/'R1'/'{sample}_R1.fasta'),
-        #read=str(MAPPING_FP/'merged_reads'/'{sample}_merged.fasta'),
         db = expand(str(GENES_DIR/'{{gene}}.fasta.{index}'), index=['nsq','nin','nhr'])
     output:
         str(MAPPING_FP/'blastn'/'{gene}'/'{sample}_R1.blastn')
@@ -64,7 +52,3 @@ rule read_blastn:
         -evalue 1e-10 \
         -out {output} \
         """
-
-rule _blast_all:
-    input:
-        expand(str(MAPPING_FP/'blastn'/'{gene}'/'{sample}_R1.blastn'), gene=GENES_DICT.keys(), sample=Samples.keys())

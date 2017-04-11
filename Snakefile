@@ -53,21 +53,17 @@ GENES_KEY = [PurePath(f.name).stem for f in GENES_DIR.glob('*.fasta')]
 GENES_VAL = [str(GENES_DIR) + '/' + g+'.fasta' for g in GENES_KEY]
 GENES_DICT = dict(zip(GENES_KEY, GENES_VAL))
 
-
 # ---- Targets rules
 include: "rules/targets/targets.rules"
-
 
 # ---- Mapping rules
 include: "rules/mapping/bowtie.rules"
 include: "rules/mapping/kegg.rules"
-include: "rules/mapping/blast.rules"
-
+include: "rules/mapping/bileacid.rules"
 
 # ---- Rule all: run all targets
 rule all:
     input: TARGET_MAPPING
-
 
 rule samples:
     run:

@@ -97,9 +97,9 @@ mapping:
   suffix: mapping
   threads: 4
   rapsearch_fp: "local/RAPSearch2/bin"
-  kegg_fp: "indexes/kegg"
-  kegg_idx_fp: "indexes/keggRAP"
-  kegg_to_ko_fp: "indexes/kegg2ko"
-  genomes_fp: "indexes/fungalIndexes"
-  bileacid_fp: "indexes/bileAcidsIndexes"
+  kegg_fp: ""
+  kegg_idx_fp: ""
+  kegg_to_ko_fp: ""
+  genomes_fp: ""
+  bileacid_fp: ""
   Rsciprt_fp: "local/bin"

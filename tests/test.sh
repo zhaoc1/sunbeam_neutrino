@@ -16,7 +16,7 @@ else
 fi
 
 # Activate the sunbeam environment
-source activate sunbeam-dev
+source activate sunbeam-neutrino
 command -v snakemake
 
 mkdir -p $TEMPDIR/data_files
@@ -40,8 +40,8 @@ cp -r truncated_taxonomy $TEMPDIR
 python generate_dummy_data.py $TEMPDIR
 
 # Create a version of the config file customized for this tempdir
-CONFIG_FP=~/miniconda3/envs/sunbeam/lib/python3.5/site-packages/sunbeamlib/data/default_config.yml
-sunbeam_init $TEMPDIR | python prep_config_file.py  > $TEMPDIR/tmp_config.yml
+CONFIG_FP=$TEMPDIR/local/default_config.yml
+sunbeam_init $TEMPDIR --template $CONFIG_FP | python prep_config_file.py  > $TEMPDIR/tmp_config.yml
 
 popd
 
@@ -61,8 +61,9 @@ popd
 
 # Running snakemake
 echo "Now testing snakemake: "
-snakemake --configfile=$TEMPDIR/tmp_config.yml -p
-snakemake --configfile=$TEMPDIR/tmp_config.yml clean_assembly
+snakemake --configfile=$TEMPDIR/tmp_config.yml --snakefile ../sunbeam/Snakefile -p
+snakemake --configfile=$TEMPDIR/tmp_config.yml --snakefile ../sunbeam/Snakefile clean_assembly
+snakemake --configfile=$TEMPDIR/tmp_config.yml
 
 # Check contents
 echo "Now checking whether we hit the expected genome:"
@@ -70,4 +71,3 @@ grep 'NC_006347.1' $TEMPDIR/sunbeam_output/annotation/summary/dummybfragilis.tsv
 
 # Check targets
 python tests/find_targets.py --prefix $TEMPDIR/sunbeam_output tests/targets.txt 
-

@@ -1,0 +1,54 @@
+# -*- mode: Snakemake -*-
+#
+# Rules for running Metaphlan2
+
+import warnings
+
+rule all_metaphlan:
+    input:
+        TARGET_METAPHLAN
+
+def review_output(raw_fp, output_fp):
+     with open(raw_fp) as f:
+        output_lines = f.read().splitlines(True)
+        
+        if len(output_lines) < 2:
+            raise ValueError("Metaphlan output has fewer than 2 lines.")
+        elif len(output_lines) == 2:
+            revised_output_lines = "".join(output_lines)
+        else:
+            header = output_lines.pop(0)
+            revised_output_lines = [header]
+            for line in output_lines:
+                if (("s__" in line) and not ("t__" in line)) or (("unclassified" in line) and not ("t__" in line)):
+                    revised_output_lines.append(line)
+            revised_output_lines = "".join(revised_output_lines)
+        
+        with open(output_fp, 'w') as f:
+            f.write(revised_output_lines)
+
+rule metaphlan_classify:
+    input:
+        r1 = str(QC_FP/'decontam'/'{sample}_R1.fastq'),
+        r2 = str(QC_FP/'decontam'/'{sample}_R2.fastq'),
+        metaphlan = str(Cfg['classify']['metaphlan_fp']/'metaphlan2.py')
+    output:
+        meta_raw = str(CLASSIFY_FP/'metaphlan'/'raw'/'{sample}_metagenome.txt'),
+        meta_ret = str(CLASSIFY_FP/'metaphlan'/'{sample}.txt'),
+        bt2_out = str(CLASSIFY_FP/'metaphlan'/'raw'/'{sample}.bowtie2.sam')
+    threads:
+        Cfg['classify']['threads']
+    run:
+        shell(
+        """
+        bowtie2 --sam-no-hd --sam-no-sq --no-unal --very-sensitive \
+        -S {output.bt2_out} -x {Cfg[classify][bt2_db_fp]} \
+        -1 {input.r1} -2 {input.r2} -p {threads}
+        
+        {input.metaphlan} {output.bt2_out} \
+        --mpa_pkl {Cfg[classify][mpa_pkl_fp]} \
+        --nproc {threads} \
+        --input_type sam > {output.meta_raw}
+        """)
+        review_output(output.meta_raw, output.meta_ret)
+

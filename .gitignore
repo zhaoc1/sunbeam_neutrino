@@ -11,3 +11,6 @@ tests/data_files
 configs/respublica_config.yml
 *.egg-*
 local/bin/*.sh
+local/biobakery-metaphlan2-40d1bf693089
+local/CAP3
+local/RAPSearch2

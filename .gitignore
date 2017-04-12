@@ -10,3 +10,4 @@ tests/local
 tests/data_files
 configs/respublica_config.yml
 *.egg-*
+local/bin/*.sh

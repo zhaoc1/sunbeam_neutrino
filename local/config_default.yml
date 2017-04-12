@@ -52,6 +52,10 @@ classify:
   threads: 4
   kraken_db_fp: "mindb"
   taxa_db_fp: ""
+  # Metaphlan2
+  metaphlan_fp: "/home/zhaoc1/sunbeam_neutrino/local/biobakery-metaphlan2-40d1bf693089"
+  mpa_pkl_fp: "/home/zhaoc1/sunbeam_neutrino/local/biobakery-metaphlan2-40d1bf693089/db_v20/mpa_v20_m200.pkl"
+  bt2_db_fp: "/home/zhaoc1/sunbeam_neutrino/local/biobakery-metaphlan2-40d1bf693089/db_v20/mpa_v20_m200"
 
 # Contig assembly
 assembly:

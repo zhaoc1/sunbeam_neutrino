@@ -16,7 +16,7 @@ else
 fi
 
 # Activate the sunbeam environment
-source activate sunbeam-neutrino
+source activate sunbeam_neutrino
 command -v snakemake
 
 mkdir -p $TEMPDIR/data_files
@@ -40,7 +40,7 @@ cp -r truncated_taxonomy $TEMPDIR
 python generate_dummy_data.py $TEMPDIR
 
 # Create a version of the config file customized for this tempdir
-CONFIG_FP=$TEMPDIR/local/default_config.yml
+CONFIG_FP=$TEMPDIR/local/config_default.yml
 sunbeam_init $TEMPDIR --template $CONFIG_FP | python prep_config_file.py  > $TEMPDIR/tmp_config.yml
 
 popd
@@ -61,9 +61,9 @@ popd
 
 # Running snakemake
 echo "Now testing snakemake: "
-snakemake --configfile=$TEMPDIR/tmp_config.yml --snakefile ../sunbeam/Snakefile -p
+snakemake --configfile=$TEMPDIR/tmp_config.yml --snakefile ../sunbeam/Snakefile
 snakemake --configfile=$TEMPDIR/tmp_config.yml --snakefile ../sunbeam/Snakefile clean_assembly
-snakemake --configfile=$TEMPDIR/tmp_config.yml
+snakemake --configfile=$TEMPDIR/tmp_config.yml -p
 
 # Check contents
 echo "Now checking whether we hit the expected genome:"

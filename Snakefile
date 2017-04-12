@@ -56,6 +56,10 @@ GENES_DICT = dict(zip(GENES_KEY, GENES_VAL))
 # ---- Targets rules
 include: "rules/targets/targets.rules"
 
+
+# ---- Classifier rules
+include: "rules/classify/metaphlan.rules"
+
 # ---- Mapping rules
 include: "rules/mapping/bowtie.rules"
 include: "rules/mapping/kegg.rules"
@@ -63,7 +67,7 @@ include: "rules/mapping/bileacid.rules"
 
 # ---- Rule all: run all targets
 rule all:
-    input: TARGET_MAPPING
+    input: TARGET_METAPHLAN + TARGET_MAPPING
 
 rule samples:
     run:

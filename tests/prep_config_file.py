@@ -27,6 +27,9 @@ def main():
     config['mapping']['genomes_fp'] = "indexes/fungalIndexes"
     config['mapping']['bileacid_fp'] = "indexes/bileAcidsIndexes"
     config['mapping']['Rscript_fp'] = "local/bin"
+    config['classify']['metaphlan_fp'] = "local/biobakery-metaphlan2-40d1bf693089"
+    config['classify']['mpa_pkl_fp'] = "local/biobakery-metaphlan2-40d1bf693089/db_v20/mpa_v20_m200.pkl"
+    config['classify']['bt2_db_fp'] = "local/biobakery-metaphlan2-40d1bf693089/db_v20/mpa_v20_m200"
 
     sys.stdout.write(yaml.dump(config))
 

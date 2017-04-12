@@ -1,3 +1,6 @@
+classify/metaphlan/dummybfragilis.txt
+classify/metaphlan/dummyecoli.txt
+
 mapping/pathfinder/dummybfragilis.ko
 mapping/pathfinder/dummyecoli.ko
 mapping/blastn/Jan2017_all_bai/dummybfragilis_R1.blastn

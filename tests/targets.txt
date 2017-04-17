@@ -1,5 +1,6 @@
 classify/metaphlan/dummybfragilis.txt
 classify/metaphlan/dummyecoli.txt
+classify/taxonomic_assignments.tsv
 
 mapping/pathfinder/dummybfragilis.ko
 mapping/pathfinder/dummyecoli.ko

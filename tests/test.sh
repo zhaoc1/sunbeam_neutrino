@@ -64,6 +64,7 @@ echo "Now testing snakemake: "
 snakemake --configfile=$TEMPDIR/tmp_config.yml --snakefile ../sunbeam/Snakefile
 snakemake --configfile=$TEMPDIR/tmp_config.yml --snakefile ../sunbeam/Snakefile clean_assembly
 snakemake --configfile=$TEMPDIR/tmp_config.yml -p
+snakemake --configfile=$TEMPDIR/tmp_config.yml all_metaphlan -p
 
 # Check contents
 echo "Now checking whether we hit the expected genome:"

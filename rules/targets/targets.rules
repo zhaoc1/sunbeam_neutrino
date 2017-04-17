@@ -27,6 +27,7 @@ TARGET_KRAKEN = [str(CLASSIFY_FP/'kraken'/'all_samples.tsv')]
 TARGET_CLASSIFY = TARGET_KRAKEN
 
 TARGET_METAPHLAN = expand(str(CLASSIFY_FP/'metaphlan'/'{sample}.txt'), sample = Samples.keys())
+TARGET_MATAPHLAN_REPORT = [str(CLASSIFY_FP/'taxonomic_assignments.tsv')]
 
 ####################
 ## assembly

@@ -6,7 +6,7 @@ import warnings
 
 rule all_metaphlan:
     input:
-        TARGET_METAPHLAN
+        TARGET_METAPHLAN + TARGET_MATAPHLAN_REPORT
 
 def review_output(raw_fp, output_fp):
      with open(raw_fp) as f:
@@ -52,3 +52,26 @@ rule metaphlan_classify:
         """)
         review_output(output.meta_raw, output.meta_ret)
 
+def parse_results(fp, input_suffix):
+    """ Return a DataFrame containing the results of one sample"""
+    sample_name = os.path.basename(fp).rsplit(input_suffix)[0]
+    return pandas.read_csv(fp, sep='\t', index_col=0, names=[sample_name], skiprows=1)
+
+rule taxonomic_assignment_report:
+    """ generate metaphlan taxonomic assignment table """
+    input:
+        fps = expand(str(CLASSIFY_FP/'metaphlan'/'{sample}.txt'), sample = Samples.keys())
+    output:
+        str(CLASSIFY_FP/'taxonomic_assignments.tsv')
+    run:
+        kos = []
+        for fp in input.fps:
+            # filter out the files that don't have any results
+            if os.path.getsize(fp) > 1:
+                # build pandas dataframes for each file of results
+                kos.append(parse_results(fp,".txt"))
+        # merge the column results
+        kos = pandas.concat(kos, axis=1)
+
+        # write them to file. Replace NAs (due to merging) with 0.
+        kos.to_csv(output[0], sep='\t', na_rep=0, index_label="Term")

@@ -67,7 +67,7 @@ include: "rules/mapping/bileacid.rules"
 
 # ---- Rule all: run all targets
 rule all:
-    input: TARGET_METAPHLAN + TARGET_MAPPING
+    input: TARGET_MAPPING
 
 rule samples:
     run:

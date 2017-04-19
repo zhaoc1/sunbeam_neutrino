@@ -2,14 +2,10 @@
 Downstream analysis after using sunbeam pipeline.
 
 ### Environment setup
-Do this once:
+
 ```
-source activate sunbeam
+bash install.sh
 
-# conda only keep track of the packages it installed. 
-pip install git+https://github.com/zhaoc1/PathwayAbundanceFinder.git
-
-snakemake
 ```
 
 ### Development
@@ -23,7 +19,7 @@ conda list --name sunbeam --explicit > requirements.txt
 
 ```
 cd sunbeam_neutrino
-bash tests/test.sh /path/to/test/datadir
+bash tests/test.sh /path/to/test/dir
 
 ```
 

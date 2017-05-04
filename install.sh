@@ -24,7 +24,7 @@ conda config --add channels eclarke
 conda env list | grep -Fxq $SUNBEAM_ENV_NAME || {
     conda create --name=$SUNBEAM_ENV_NAME --file=requirements.txt --yes;
     source activate $SUNBEAM_ENV_NAME
-    pip install  ../sunbeam  #-e create symlink to the sunbeamlib
+    pip install  -e ../sunbeam  #create symlink to the sunbeamlib
     pip install git+https://github.com/eclarke/decontam.git
     pip install git+https://github.com/zhaoc1/PathwayAbundanceFinder.git
     echo "$SUNBEAM_ENV_NAME successfully installed.";

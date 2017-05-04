@@ -14,3 +14,5 @@ local/bin/*.sh
 local/biobakery-metaphlan2-40d1bf693089
 local/CAP3
 local/RAPSearch2
+local/IGV
+local/IGV_2.3.68

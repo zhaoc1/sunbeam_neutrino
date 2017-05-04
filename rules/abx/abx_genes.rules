@@ -1,0 +1,102 @@
+# -*- mode: Snakemake -*-
+#
+# Antibiotics resistance genes mapping: presence/absence in a sample
+#
+
+rule fastq2fasta:
+    input:
+        '{fname}.fastq'
+    output:
+        '{fname}.fasta'
+    shell:
+        "fastq_to_fasta_fast {input} > {output}"
+
+rule tblastx:
+    input:
+        str(ASSEMBLY_FP/'paired'/'{sample}.assembled.fasta')
+    output:
+        str(ANNOTATION_FP/'tblastx'/'{db}'/'{sample}.xml')
+    params:
+        db = lambda wildcard: Blastdbs['nucl'][wildcard.db]
+    shell:
+        """
+        tblastx \
+        -query {input} \
+        -db {params.db} \
+        -outfmt 5 \
+        -num_threads {Cfg[all][subcores]} \
+        -evalue 1e-10 \
+        -max_target_seqs 1 \
+        -out {output}
+        """
+rule blastx:
+    input:
+        str(ASSEMBLY_FP/'paired'/'{sample}.assembled.fasta')
+    output:
+        str(ANNOTATION_FP/'blastx'/'{db}'/'{sample}.txt')
+    params:
+        db = lambda wildcard: Blastdbs['prot'][wildcard.db]
+    shell:
+        """
+        cat {input} | parallel --block 100k --recstart '>' --pipe \
+        blastx \
+        -query - \
+        -db {params.db} \
+        -outfmt 6 \
+        -evalue 0.01 \
+        -max_target_seqs 1 > {output}
+        """
+
+rule diamond:
+    input:
+        str(ASSEMBLY_FP/'paired'/'{sample}.assembled.fasta')
+    output:
+        temp(str(ANNOTATION_FP/'diamond'/'{db}'/'{sample}.daa'))
+    params:
+        out = str(ANNOTATION_FP/'diamond'/'{db}'/'{sample}'),
+        db = lambda wildcard: Blastdbs['prot'][wildcard.db]
+    shell:
+        """
+        diamond blastx \
+        --db {params.db} \
+        --query {input} \
+        --daa {params.out} \
+        --threads {Cfg[all][subcores]}
+        """
+
+rule daa_to_fmt6:
+    input:
+        '{fname}.daa'
+    output:
+        '{fname}.txt'
+    shell:
+        "diamond view --daa {input} > {output}"
+
+# rule blast_summary:
+#     """Create a summary of results from a BLAST call."""
+#     input:
+#         expand(
+#             str(ANNOTATION_FP/'{{blast_prog}}'/'{{db}}'/'{sample}.txt'),
+#             sample=Samples.keys())
+# #            sample=['PCMP_SCID00001.ST.2.4', 'PCMP_SCID00001.ST.4.4', 'PCMP_SCID00001.ST.5.2', 'PCMP_SCID00001.ST.8.1'])
+#     output:
+#         str(ANNOTATION_FP/'{blast_prog}'/'{db}'/'report.tsv')
+#     run:
+#         with open(output[0], 'w') as out:
+#             writer = csv.DictWriter(
+# 	        out,
+# 	        fieldnames=['sample','query','hit'],
+#                 delimiter='\t')
+#             writer.writeheader()
+#             list(writer.writerow(result) for result in blast_summary(input, "blast-tab"))
+
+rule gene_summary:
+    input: str(ANNOTATION_FP/'{blast_prog}'/'{db}'/'report.tsv')
+    output: str(ANNOTATION_FP/'{blast_prog}'/'{db}'/'gene_summary.tsv')
+    shell:
+        "tail -n +2 {input} | cut -f1,3 | sort -k2 -k1 | uniq -c | sort -k1 -n > {output}"
+        
+
+rule _abx_all:
+    input:
+        str(ANNOTATION_FP/'blastx'/'card'/'gene_summary.tsv')

@@ -107,3 +107,5 @@ mapping:
   genomes_fp: ""
   bileacid_fp: ""
   Rsciprt_fp: "local/bin"
+  igv_fp: ""
+

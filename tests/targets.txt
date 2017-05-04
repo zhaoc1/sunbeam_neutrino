@@ -9,6 +9,8 @@ mapping/blastn/Jan2017_all_bai/dummyecoli_R1.blastn
 mapping/bowtie/fungi/summary/dummybfragilis_counts
 mapping/bowtie/fungi/summary/dummyecoli_counts
 
+mapping/fungi-GCA_000328385.1_Cuti_1.0_genomic.fna_DG000065.1.alignment.png
+
 annotation/blastn/bacteria/contig/dummybfragilis.xml
 annotation/blastn/bacteria/contig/dummyecoli.xml
 

@@ -54,23 +54,29 @@ TARGET_ANNOTATE = expand(str(ANNOTATION_FP/'summary'/'{sample}.tsv'), sample=Sam
 ####################
 
 ## KEGG pathway finder
-TARGET_PATH = expand(str(MAPPING_FP/'summary'/'pathfinder'/'{sample}_summary.json'), sample=Samples.keys())
+TARGET_PATH = expand(str(MAPPING_FP/'summary'/'pathfinder'/'{sample}_summary.json'), 
+                    sample=Samples.keys())
 TARGET_PATHREPORT = [str(MAPPING_FP/'ko_assignments.tsv')]
 
-## BLAST
-TARGET_BLAST = expand(str(MAPPING_FP/'blastn'/'{gene}'/'{sample}_R1.blastn'), 
+## BILE ACID BLAST
+TARGET_BILE = expand(str(MAPPING_FP/'blastn'/'bile_acid'/'{gene}'/'{sample}_R1.blastn'), 
                       gene=GENES_DICT.keys(), sample=Samples.keys())
 
-## BOWTIE mapping
-TARGET_BOWTIE = (
-     expand(
-            str(MAPPING_FP/'bowtie'/'{genome}'/'summary'/'{sample}_counts'),
-            sample=Samples.keys(), genome=GENOMES_DICT.keys()) +
-     expand(
-            str(MAPPING_FP/'bowtie'/'{genome}'/'summary'/'{sample}_coverage'),
-            sample=Samples.keys(), genome=GENOMES_DICT.keys()))
-    
-TARGET_MAPPING = TARGET_PATH + TARGET_PATHREPORT + TARGET_BLAST + TARGET_BOWTIE
+## FUGAL BOWTIE MAPPING
+TARGET_FUNGI = expand(str(MAPPING_FP/'bowtie'/'{genome}'/'summary'/'{sample}_{suffix}'),
+                      sample=Samples.keys(), genome=GENOMES_DICT.keys(), 
+                      suffix=['counts', 'coverage'])
+
+## ANTIBIOTICS RESISTANCE 
+TARGET_ABX = (
+    expand(
+           str(ANNOTATION_FP/'blastx'/'card'/'{sample}.blastx'),
+           sample=Samples.keys()) +
+    expand(
+           str(MAPPING_FP/'blastn'/'card'/'{sample}_R1.blastn'),
+           sample=Samples.keys()))
+
+TARGET_MAPPING = TARGET_PATH + TARGET_PATHREPORT + TARGET_BILE + TARGET_FUNGI + TARGET_ABX
 
 ## TARGETS for sunbeam and sunbeam_neutrino
 TARGET_ALL = TARGET_QC + TARGET_CLASSIFY + TARGET_ASSEMBLY + TARGET_ANNOTATE + TARGET_MAPPING

@@ -20,6 +20,8 @@ def main():
     config['assembly']['cap3_fp'] = "local/CAP3"
     config['blastdbs']['root_fp'] = "local/blast"
     config['blastdbs']['nucleotide']['bacteria'] = 'bacteria.fa'
+#    config['blastdbs']['nucleotide']['card'] = "card/nucleotide_fasta_protein_homolog_model.fasta"
+#    config['blastdbs']['protein']['card'] = "card/nucleotide_fasta_protein_homolog_model.fasta"
     config['mapping']['rapsearch_fp'] = "local/RAPSearch2/bin"
     config['mapping']['kegg_fp'] = "indexes/kegg"
     config['mapping']['kegg_idx_fp'] = "indexes/keggRAP"

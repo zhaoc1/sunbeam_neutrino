@@ -16,9 +16,9 @@
 
 all:
   root: "/home/zhaoc1/path/to/your/project/dir"
-  data_fp: "data_files"
+  data_fp: "barcodes.txt"
   output_fp: "sunbeam_output"
-  filename_fmt: "PCMP_{sample}_{rp}.fastq"
+  filename_fmt: "{sample}_{rp}.fastq"
   subcores: 4
   exclude: []
 
@@ -82,23 +82,23 @@ blast:
 blastdbs:
   root_fp: "/mnt/isilon/microbiome/analysis/biodata/blast"
   nucleotide:
-    bacteria:
-      BacterialGenomes/ncbi_bacteria.fa
-    fungi:
-      FungalGenomes/ncbi_fungi.fa
+#    bacteria:
+#       bacteriaGenomes/ncbi_bacteria_20170330.fasta
+#    fungi:
+#       fungiGenomes/ncbi_fungi_20170330.fasta
 #    viral:
-#      viral.1.1.genomic.fna
-#    nt:
-#      nt/nt
-#  protein:
+#       viralGenomes/ncbi_viral_20170505.fasta
+    card:
+       card/nucleotide_fasta_protein_homolog_model.fasta
+  protein:
 #    integrase:
 #      UniprotPhageIntegrase.fasta
 #    aclame:
 #      ACLAME/aclame_proteins_viruses_prophages_0.4.fasta
 #    vfdb:
 #      VFDB/VFs.faa
-#    card:
-#      card/nucl_homolog.fasta
+    card:
+      card/protein_fasta_protein_homolog_model.fasta
 
 mapping:
   suffix: mapping
@@ -110,5 +110,5 @@ mapping:
   kegg_fp: "/mnt/isilon/microbiome/analysis/biodata/kegg"
   kegg_idx_fp: "/mnt/isilon/microbiome/analysis/biodata/keggRAP"
   kegg_to_ko_fp: "/mnt/isilon/microbiome/analysis/biodata/kegg2ko"
-  genomes_fp: "/mnt/isilon/microbiome/analysis/biodata/fungalIndexes"
-  bileacid_fp: "/mnt/isilon/microbiome/analysis/biodata/bileAcidsIndexes"
+  genomes_fp: "/mnt/isilon/microbiome/analysis/biodata/bowtie2/fungalIndexes"
+  bileacid_fp: "/mnt/isilon/microbiome/analysis/biodata/bowtie2/bileacidsIndexes"

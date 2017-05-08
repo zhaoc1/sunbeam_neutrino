@@ -10,7 +10,6 @@ import sys
 import yaml
 import configparser
 from pprint import pprint
-from pathlib import Path
 from pathlib import Path, PurePath
 
 from snakemake.utils import update_config, listfiles
@@ -31,8 +30,10 @@ Cfg = check_config(config)
 Blastdbs = process_databases(Cfg['blastdbs'])
 Samples = build_sample_list(Cfg['all']['data_fp'], Cfg['all']['filename_fmt'], Cfg['all']['exclude'])
 
+
 # ---- Change your workdir to output_fp
 workdir: str(Cfg['all']['output_fp'])
+
 
 # ---- Set up output paths for the various steps
 QC_FP = output_subdir(Cfg, 'qc')
@@ -40,6 +41,7 @@ ASSEMBLY_FP = output_subdir(Cfg, 'assembly')
 ANNOTATION_FP = output_subdir(Cfg, 'annotation')
 CLASSIFY_FP = output_subdir(Cfg, 'classify')
 MAPPING_FP = output_subdir(Cfg, 'mapping')
+
 
 # ---- Fungal genome mapping
 GENOME_DIR = Cfg['mapping']['genomes_fp']
@@ -53,17 +55,28 @@ GENES_KEY = [PurePath(f.name).stem for f in GENES_DIR.glob('*.fasta')]
 GENES_VAL = [str(GENES_DIR) + '/' + g+'.fasta' for g in GENES_KEY]
 GENES_DICT = dict(zip(GENES_KEY, GENES_VAL))
 
+# ---- Antibiotics resistance mapping
+BLASTDB_DIR = Cfg['blastdbs']['root_fp']
+BLASTDB_RAW_DICT_PROT= Blastdbs['prot']
+BLASTDB_KEY_PROT = [PurePath(f.name).stem for f in BLASTDB_DIR.glob("*/*.fasta") if str(f) in BLASTDB_RAW_DICT_PROT.values()]
+BLASTDB_DICT_PROT = dict(zip(BLASTDB_KEY_PROT, BLASTDB_RAW_DICT_PROT.values()))
+
+BLASTDB_RAW_DICT_NUCL= Blastdbs['nucl']
+BLASTDB_KEY_NUCL = [PurePath(f.name).stem for f in BLASTDB_DIR.glob("*/*.fasta") if str(f) in BLASTDB_RAW_DICT_NUCL.values()]
+BLASTDB_DICT_NUCL = dict(zip(BLASTDB_KEY_NUCL, BLASTDB_RAW_DICT_NUCL.values()))
+
+
 # ---- Targets rules
 include: "rules/targets/targets.rules"
-
 
 # ---- Classifier rules
 include: "rules/classify/metaphlan.rules"
 
 # ---- Mapping rules
-include: "rules/mapping/bowtie.rules"
+include: "rules/mapping/fungi.rules"
 include: "rules/mapping/kegg.rules"
-include: "rules/mapping/bileacid.rules"
+include: "rules/mapping/bile_acid.rules"
+include: "rules/mapping/abx_resist.rules"
 
 # ---- Rule all: run all targets
 rule all:

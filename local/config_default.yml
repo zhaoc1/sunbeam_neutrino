@@ -57,6 +57,7 @@ classify:
   mpa_pkl_fp: "local/biobakery-metaphlan2-40d1bf693089/db_v20/mpa_v20_m200.pkl"
   bt2_db_fp: "local/biobakery-metaphlan2-40d1bf693089/db_v20/mpa_v20_m200"
 
+
 # Contig assembly
 assembly:
   suffix: assembly
@@ -83,19 +84,11 @@ blastdbs:
   nucleotide:
     bacteria:
       bacteria.fa
-#    viral:
-#      viral.1.1.genomic.fna
-#    nt:
-#      nt/nt
-#  protein:
-#    integrase:
-#      UniprotPhageIntegrase.fasta
-#    aclame:
-#      ACLAME/aclame_proteins_viruses_prophages_0.4.fasta
-#    vfdb:
-#      VFDB/VFs.faa
 #    card:
 #      card/nucl_homolog.fasta
+#  protein:
+#    card:
+#      card/prot_homolog.fasta
 
 mapping:
   suffix: mapping

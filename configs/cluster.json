@@ -1,27 +1,27 @@
 {
     "__default__" :
     {
-        "h_vmem" : "12G",
-        "mem_free" : "10G",
-        "m_mem_free" : "8G"
+        "h_vmem" : "15G",
+        "mem_free" : "12G",
+        "m_mem_free" : "10G"
     },
     "demultiplex" :
     {
-        "h_vmem" : "12G",
-        "mem_free" : "10G",
-        "m_mem_free" : "8G"
+        "h_vmem" : "15G",
+        "mem_free" : "12G",
+        "m_mem_free" : "10G"
     },
     "fastqc" :
     {
-        "h_vmem" : "10G",
-        "mem_free" : "8G",
-        "m_mem_free" : "7G"
+        "h_vmem" : "12G",
+        "mem_free" : 10G",
+        "m_mem_free" : "8G"
     },
     "decontam_human" :
     {
-        "h_vmem" : "40G",
-        "mem_free" : "35G",
-        "m_mem_free" : "30G"
+        "h_vmem" : "60G",
+        "mem_free" :  50G",
+        "m_mem_free" : "40G"
     },
     "idba_ud":
     {
@@ -31,15 +31,15 @@
     },
     "cap3" :
     {
-        "h_vmeme": "300G",
+        "h_vmeme": "500G",
         "mem_free": "250G",
         "m_mem_free": "200G"
     },
     "kraken_classify" :
     {
-        "h_vmem" : "25G",
-        "mem_free" : "22G",
-        "m_mem_free" : "20G"
+        "h_vmem" : "40G",
+        "mem_free" : "35G",
+        "m_mem_free" : "30G"
     },
      "build_contigs" :
     {
@@ -52,5 +52,17 @@
         "h_vmem" : "20G",
         "mem_free" : "18G",
         "m_mem_free" : "15G"
+    },
+    "path_finder" :
+    {
+        "h_vmem" : "60G",
+        "mem_free" : "50G",
+        "m_mem_free" : "20G"
+    },
+    "blastx" :
+    {
+        "h_vmem" : "60G",
+        "mem_free" : "50G",
+        "m_mem_free" : "20G"
     }
 }

@@ -56,7 +56,10 @@ kraken-build --db mindb --clean
 # Build fake blast database
 mkdir -p local/blast
 cat raw/*.fna > local/blast/bacteria.fa
+cp -r indexes/card local/blast
 makeblastdb -dbtype nucl -in local/blast/bacteria.fa
+makeblastdb -dbtype nucl -in local/blast/card/nucleotide_fasta_protein_homolog_model.fasta
+makeblastdb -dbtype prot -in local/blast/card/protein_fasta_protein_homolog_model.fasta
 popd
 
 # Running snakemake

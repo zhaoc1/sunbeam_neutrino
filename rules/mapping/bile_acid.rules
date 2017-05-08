@@ -4,10 +4,9 @@
 #	Rules for BLASTing against databases
 
 
-rule _blast_all:
+rule _bile_acid_all:
     input:
-        expand(str(MAPPING_FP/'blastn'/'{gene}'/'{sample}_R1.blastn'), 
-               gene=GENES_DICT.keys(), sample=Samples.keys())
+        TARGET_BILE
 
 rule _test_build_db:
     input:
@@ -29,7 +28,7 @@ rule fq2fa:
     output:
         str(MAPPING_FP/'R1'/'{sample}_R1.fasta')
     shell:
-        "fq2fa {input} {output}"
+        "fastq_to_fasta_fast {input} > {output}"
 
 rule read_blastn:
     #message: "run blastn against a given database and write the results into tabular"
@@ -37,7 +36,7 @@ rule read_blastn:
         read = str(MAPPING_FP/'R1'/'{sample}_R1.fasta'),
         db = expand(str(GENES_DIR/'{{gene}}.fasta.{index}'), index=['nsq','nin','nhr'])
     output:
-        str(MAPPING_FP/'blastn'/'{gene}'/'{sample}_R1.blastn')
+        str(MAPPING_FP/'blastn'/'bile_acid'/'{gene}'/'{sample}_R1.blastn')
     params:
         db=lambda wildcard: GENES_DICT[wildcard.gene]
     threads: 

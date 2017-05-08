@@ -1,12 +1,5 @@
 # -*- mode: Snakemake -*-
 
-from pathlib import Path, PurePath
-
-GENOME_DIR = Cfg['mapping']['genomes_fp']
-GENOMES_KEY = [PurePath(f.name).stem for f in GENOME_DIR.glob('*.fasta')]
-GENOMES_VAL = [str(GENOME_DIR) + '/' + g+'.fasta' for g in GENOMES_KEY]
-GENOMES_DICT = dict(zip(GENOMES_KEY, GENOMES_VAL))
-
 def bt2_index_files(genome, idx_fp):
     fwd = expand('{idx_fp}/{genome}.{index}.bt2',
                  genome=genome,

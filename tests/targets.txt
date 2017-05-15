@@ -4,10 +4,12 @@ classify/taxonomic_assignments.tsv
 
 mapping/pathfinder/dummybfragilis.ko
 mapping/pathfinder/dummyecoli.ko
-mapping/blastn/Jan2017_all_bai/dummybfragilis_R1.blastn
-mapping/blastn/Jan2017_all_bai/dummyecoli_R1.blastn
+mapping/blastn/bile_acid/Jan2017_all_bai/dummybfragilis_R1.blastn
+mapping/blastn/bile_acid/Jan2017_all_bai/dummyecoli_R1.blastn
 mapping/bowtie/fungi/summary/dummybfragilis_counts
 mapping/bowtie/fungi/summary/dummyecoli_counts
+mapping/blastx/card/dummyecoli_R1.blastx
+mapping/blastx/card/dummybfragilis_R1.blastx
 
 mapping/fungi-GCA_000328385.1_Cuti_1.0_genomic.fna_DG000065.1.alignment.png
 

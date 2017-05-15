@@ -62,13 +62,33 @@ rule card_blastx:
         -out {output}
         """
 
+rule card_blastx_R1:
+    message: "run blastx for R1 read against card db and write the results into tabular"
+    input:
+        R1 = str(MAPPING_FP/'R1'/'{sample}_R1.fasta'),
+        db = lambda wildcard: Blastdbs['prot'][wildcard.db]
+    output:
+        str(MAPPING_FP/'blastx'/'{db}'/'{sample}_R1.blastx')
+    threads: 
+        Cfg['blast']['threads']
+    shell:
+        """
+        blastx \
+        -query {input.R1} \
+        -db {input.db} \
+        -outfmt 6 \
+        -num_threads {threads} \
+        -evalue 1e-10 \
+        -out {output}
+        """
+
 rule card_blastn:
-    message: "run blastn for R1 read against card db and write the results into tabular"
+    message: "run blastn for R1 against card db and write the results into tabular"
     input:
         R1 = str(MAPPING_FP/'R1'/'{sample}_R1.fasta'),
         db = lambda wildcard: Blastdbs['nucl'][wildcard.db]
     output:
-        str(MAPPING_FP/'blastn'/'{db}'/'{sample}_R1.blastn')
+        str(MAPPING_FP/'blastn'/'{db}'/'{sample}.blastn')
     threads: 
         Cfg['blast']['threads']
     shell:
@@ -79,6 +99,7 @@ rule card_blastn:
         -outfmt 6 \
         -num_threads {threads} \
         -evalue 1e-10 \
+        -max_target_seqs 1 \
         -out {output}
         """
 

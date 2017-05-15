@@ -73,7 +73,7 @@ TARGET_ABX = (
            str(ANNOTATION_FP/'blastx'/'card'/'{sample}.blastx'),
            sample=Samples.keys()) +
     expand(
-           str(MAPPING_FP/'blastn'/'card'/'{sample}_R1.blastn'),
+           str(MAPPING_FP/'blastx'/'card'/'{sample}_R1.blastx'),
            sample=Samples.keys()))
 
 TARGET_MAPPING = TARGET_PATH + TARGET_PATHREPORT + TARGET_BILE + TARGET_FUNGI + TARGET_ABX

@@ -21,7 +21,7 @@ def main():
     config['blastdbs']['root_fp'] = "local/blast"
     config['blastdbs']['nucleotide']['bacteria'] = 'bacteria.fa'
 #    config['blastdbs']['nucleotide']['card'] = "card/nucleotide_fasta_protein_homolog_model.fasta"
-#    config['blastdbs']['protein']['card'] = "card/nucleotide_fasta_protein_homolog_model.fasta"
+    config['blastdbs']['protein']['card'] = "card/protein_fasta_protein_homolog_model.fasta"
     config['mapping']['rapsearch_fp'] = "local/RAPSearch2/bin"
     config['mapping']['kegg_fp'] = "indexes/kegg"
     config['mapping']['kegg_idx_fp'] = "indexes/keggRAP"

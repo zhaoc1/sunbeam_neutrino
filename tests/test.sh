@@ -58,7 +58,7 @@ mkdir -p local/blast
 cat raw/*.fna > local/blast/bacteria.fa
 cp -r indexes/card local/blast
 makeblastdb -dbtype nucl -in local/blast/bacteria.fa
-makeblastdb -dbtype nucl -in local/blast/card/nucleotide_fasta_protein_homolog_model.fasta
+#makeblastdb -dbtype nucl -in local/blast/card/nucleotide_fasta_protein_homolog_model.fasta
 makeblastdb -dbtype prot -in local/blast/card/protein_fasta_protein_homolog_model.fasta
 popd
 
@@ -67,6 +67,8 @@ echo "Now testing snakemake: "
 snakemake --configfile=$TEMPDIR/tmp_config.yml --snakefile ../sunbeam/Snakefile
 snakemake --configfile=$TEMPDIR/tmp_config.yml --snakefile ../sunbeam/Snakefile clean_assembly
 snakemake --configfile=$TEMPDIR/tmp_config.yml -p
+
+echo "Now testing for metaphlan"
 snakemake --configfile=$TEMPDIR/tmp_config.yml all_metaphlan -p
 
 # Check contents

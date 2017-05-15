@@ -86,9 +86,9 @@ blastdbs:
       bacteria.fa
 #    card:
 #      card/nucl_homolog.fasta
-#  protein:
-#    card:
-#      card/prot_homolog.fasta
+  protein:
+    card:
+      card/protein_fasta_protein_homolog_model.fasta
 
 mapping:
   suffix: mapping

@@ -55,8 +55,9 @@ GENES_KEY = [PurePath(f.name).stem for f in GENES_DIR.glob('*.fasta')]
 GENES_VAL = [str(GENES_DIR) + '/' + g+'.fasta' for g in GENES_KEY]
 GENES_DICT = dict(zip(GENES_KEY, GENES_VAL))
 
-# ---- Antibiotics resistance mapping
+# ---- Blast DB mapping (antibiotics resistance and virus)
 BLASTDB_DIR = Cfg['blastdbs']['root_fp']
+
 BLASTDB_RAW_DICT_PROT= Blastdbs['prot']
 BLASTDB_KEY_PROT = [PurePath(f.name).stem for f in BLASTDB_DIR.glob("*/*.fasta") if str(f) in BLASTDB_RAW_DICT_PROT.values()]
 BLASTDB_DICT_PROT = dict(zip(BLASTDB_KEY_PROT, BLASTDB_RAW_DICT_PROT.values()))
@@ -65,7 +66,6 @@ BLASTDB_RAW_DICT_NUCL= Blastdbs['nucl']
 BLASTDB_KEY_NUCL = [PurePath(f.name).stem for f in BLASTDB_DIR.glob("*/*.fasta") if str(f) in BLASTDB_RAW_DICT_NUCL.values()]
 BLASTDB_DICT_NUCL = dict(zip(BLASTDB_KEY_NUCL, BLASTDB_RAW_DICT_NUCL.values()))
 
-
 # ---- Targets rules
 include: "rules/targets/targets.rules"
 
@@ -73,6 +73,7 @@ include: "rules/targets/targets.rules"
 include: "rules/classify/metaphlan.rules"
 
 # ---- Mapping rules
+include: "rules/mapping/blast_db.rules"
 include: "rules/mapping/fungi.rules"
 include: "rules/mapping/kegg.rules"
 include: "rules/mapping/bile_acid.rules"

@@ -97,6 +97,8 @@ blastdbs:
 #      ACLAME/aclame_proteins_viruses_prophages_0.4.fasta
 #    vfdb:
 #      VFDB/VFs.faa
+    viral:
+       add the refseq protein databases...
     card:
       card/protein_fasta_protein_homolog_model.fasta
 

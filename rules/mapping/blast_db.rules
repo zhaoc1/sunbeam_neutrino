@@ -1,0 +1,39 @@
+# -*- mode: Snakemake -*-
+#
+# Build BLAST DB: wildcard as key of dictionary
+#
+
+rule _test_blastdb_prot:
+    input:
+        expand(
+            str(BLASTDB_DIR/'{subfolder}/{seq}.fasta.{index}'), 
+                subfolder=list(BLASTDB_RAW_DICT_PROT.keys()), 
+                seq = BLASTDB_DICT_PROT.keys(), 
+                index=['psq','pin','phr'])
+
+rule _test_blastdb_nucl:
+    input:
+        expand(
+            str(BLASTDB_DIR/'{subfolder}/{seq}.fasta.{index}'), 
+                subfolder=list(BLASTDB_RAW_DICT_NUCL.keys()), 
+                seq = BLASTDB_DICT_NUCL.keys(), 
+                index=['nsq','nin','nhr'])
+
+rule build_blastdb_prot:
+    message: "build blast databases (prot)"
+    input:
+        lambda wildcard: BLASTDB_DICT_PROT[wildcard.db]
+    output:
+        expand(str(BLASTDB_DIR/'{subfolder}'/'{{db}}.fasta.{index}'), subfolder=list(BLASTDB_RAW_DICT_PROT.keys()), index=['psq','pin','phr'])
+    shell:
+        "makeblastdb -in {input} -dbtype prot"
+
+rule build_blastdb_nucl:
+    message: "build blast databases (nucl)"
+    input:
+        lambda wildcard: BLASTDB_DICT_NUCL[wildcard.db]
+    output:
+        expand(str(BLASTDB_DIR/'{subfolder}'/'{{db}}.fasta.{index}'), subfolder=list(BLASTDB_RAW_DICT_NUCL.keys()), index=['nsq','nin','nhr'])
+    shell:
+        "makeblastdb -in {input} -dbtype nucl"
+

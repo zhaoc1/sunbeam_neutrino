@@ -76,6 +76,11 @@ TARGET_ABX = (
            str(MAPPING_FP/'blastx'/'card'/'{sample}_R1.blastx'),
            sample=Samples.keys()))
 
+## GLYCOSIDE HYDROLASE
+TARGET_GLYCO = expand(str(MAPPING_FP/'diamond'/'{db}'/'{sample}_R1.m8'),
+db=DIAMOND_DICT.keys(), sample=Samples.keys())
+
+
 TARGET_MAPPING = TARGET_PATH + TARGET_PATHREPORT + TARGET_BILE + TARGET_FUNGI + TARGET_ABX
 
 ## TARGETS for sunbeam and sunbeam_neutrino

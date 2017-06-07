@@ -79,6 +79,20 @@ if [ ! -d local/CAP3 ]; then
     install_cap3;
 fi
 
+echo "Installing diamond ..."
+install_diamond(){
+    DIR=$HOME/$SUNBEAM_ENV_NAME/local
+    wget http://github.com/bbuchfink/diamond/releases/download/v0.9.6/diamond-linux64.tar.gz -P $DIR
+    tar -xzf $DIR/diamond-linux64.tar.gz -C $DIR
+    rm $DIR/diamond-linux64.tar.gz
+    command -v $DIR/diamond > /dev/null 2>&1 || \
+    { echo "Diamond hasn't been properlly install, try installing manually"; exit 1; }
+    }
+}
+
+if [ ! -d local/diamond ]; then
+    install_diamond;
+fi
 
 echo "To get started, ensure ${PREFIX}/bin is in your path and run 'source activate $SUNBEAM_ENV_NAME'"
 

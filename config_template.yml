@@ -113,4 +113,6 @@ mapping:
   kegg_idx_fp: "/mnt/isilon/microbiome/analysis/biodata/keggRAP"
   kegg_to_ko_fp: "/mnt/isilon/microbiome/analysis/biodata/kegg2ko"
   genomes_fp: "/mnt/isilon/microbiome/analysis/biodata/bowtie2/fungalIndexes"
-  bileacid_fp: "/mnt/isilon/microbiome/analysis/biodata/bowtie2/bileacidsIndexes"
+  bileacid_fp: "/mnt/isilon/microbiome/analysis/biodata/bileacidsIndexes"
+  glyco_fp: "/mnt/isilon/microbiome/analysis/biodata/diamondIndexes"
+  diamond_fp: "/home/zhaoc1/sunbeam_neutrino/local/diamond"

@@ -66,6 +66,12 @@ BLASTDB_RAW_DICT_NUCL= Blastdbs['nucl']
 BLASTDB_KEY_NUCL = [PurePath(f.name).stem for f in BLASTDB_DIR.glob("*/*.fasta") if str(f) in BLASTDB_RAW_DICT_NUCL.values()]
 BLASTDB_DICT_NUCL = dict(zip(BLASTDB_KEY_NUCL, BLASTDB_RAW_DICT_NUCL.values()))
 
+# ---- Diamond DB mapping (glycoside hydrolase)
+DIAMOND_DIR = Cfg['mapping']['glyco_fp']
+DIAMOND_KEY = [PurePath(f.name).stem for f in DIAMOND_DIR.glob('*.fasta')]
+DIAMOND_VAL = [str(DIAMOND_DIR) + '/' + g +'.fasta' for g in DIAMOND_KEY]
+DIAMOND_DICT = dict(zip(DIAMOND_KEY, DIAMOND_VAL))
+
 # ---- Targets rules
 include: "rules/targets/targets.rules"
 
@@ -78,6 +84,7 @@ include: "rules/mapping/fungi.rules"
 include: "rules/mapping/kegg.rules"
 include: "rules/mapping/bile_acid.rules"
 include: "rules/mapping/abx_resist.rules"
+include: "rules/mapping/glycoside.rules"
 
 # ---- Rule all: run all targets
 rule all:

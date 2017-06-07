@@ -25,20 +25,20 @@ rule build_diamonddb:
 rule diamond_R1:
     input:
         read = str(MAPPING_FP/'R1'/'{sample}_R1.fasta'),
-        db = expand(str(DIAMOND_DIR/'{{db}}.fasta.{index}'), index=['dmnd'])
+        db = lambda wildcard: DIAMOND_DICT[wildcard.db],
+        diamond = str(Cfg['mapping']['diamond_fp'])
     output:
         str(MAPPING_FP/'diamond'/'{db}'/'{sample}_R1.m8')
-    params:
-        db = lambda wildcard: DIAMOND_DICT[wildcard.db]
     threads: 
         Cfg['mapping']['threads']
     shell:
         """
-        diamond blastx \
-        --db {params.db} \
+        {input.diamond} blastx \
+        --db {input.db} \
         --query {input.read} \
         --out {output} \
         --threads {threads} \
         --max-target-seqs 0 \
         --evalue 1e-10
         """
+

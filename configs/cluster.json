@@ -14,13 +14,13 @@
     "fastqc" :
     {
         "h_vmem" : "12G",
-        "mem_free" : 10G",
+        "mem_free" : "10G",
         "m_mem_free" : "8G"
     },
     "decontam_human" :
     {
         "h_vmem" : "60G",
-        "mem_free" :  50G",
+        "mem_free" :  "50G",
         "m_mem_free" : "40G"
     },
     "idba_ud":

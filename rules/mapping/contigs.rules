@@ -1,0 +1,186 @@
+# -*- mode: Snakemake -*-
+# Chunyu Zhao 
+# 08/31/2017
+
+from Bio import SeqIO
+import json
+
+import sys
+sys.path.insert(0, '../sunbeam')
+from sunbeamlib import igv, samtools
+
+def top_n_contig(fastafile, n=2):
+    # dict: contig name as key, and length of contig as value
+    record_dict = {record.id : len(record.seq) for record in SeqIO.parse(fastafile, "fasta")}
+    
+    # sort dict by values in decreasing order
+    # first, get the ordered list of (k, v) tuples
+    # second, convert list of tuples into list of keys 
+    # third, select the top n longest contigs
+    # YET, I later on realized final-contigs is already sorted in final-file rule...
+    topn_contigs = [key for (key, value) in sorted(record_dict.items(), key=lambda k_v: k_v[1], reverse=True)][:n]
+    #- todo: option for all the contigs => topn_contigs[:]
+    return(topn_contigs)
+
+def subset_fasta_file(fastafile, outfile, seqids):
+    # given a fasta file, and a list of seqids, extract the seqs and write into fasta
+    dict_towrite = {record.id : record.seq for record in SeqIO.parse(fastafile, "fasta") if record.id in seqids}
+    
+    # write to output file
+    with open(outfile,"w") as f:
+        for id,seq in dict_towrite.items():
+            f.write(">%s\n%s\n" % (id, seq))
+
+def bwa_index_files(genome, index_fp):
+    """ Return the bwa index files for a file """
+    indexes = expand(
+                '{index_fp}/{genome}.{index}',
+                index_fp=index_fp,
+                genome=genome,
+                index=['sa','amb','ann','pac','bwt'])
+    return indexes
+
+rule select_contigs:
+    """ Select contigs of interest for further align reads to contig """
+    input:
+        files = expand(str(ASSEMBLY_FP/'{sample}_assembly'/'final-contigs.fa'), sample=Samples.keys())
+    output:
+        #- TODO: set the jsonfile as an option in the config file (default empty)
+        jsonfile = str(MAPPING_FP/'contigs'/'contigs_tomap.json')
+    params:
+        #- TODO: need to change the defaule contig file + testing 
+        top_contig = Cfg['mapping']['top_contig']
+    run:
+        ret = dict()
+        for file in input.files:
+            #- KEY: sample
+            sample_assembly = os.path.split(os.path.dirname(file))[1]
+            sample = sample_assembly.split("_")[0]
+            
+            #- VALUE: list of selected top n contigs
+            ret[sample] = top_n_contig(file, params.top_contig)
+        
+        with open(output.jsonfile, 'w') as f:
+            f.write(json.dumps(ret))
+
+#- now use the terminology of reference genome with IGV (referred to Jesse)
+rule segments_fasta:
+    input:
+        fasta = str(ASSEMBLY_FP/'{sample}_assembly'/'final-contigs.fa'),
+        jsonfile = str(MAPPING_FP/'contigs'/'contigs_tomap.json')
+    output:
+        # one sample on selected contig fasta file
+        outfile = str(MAPPING_FP/'contigs'/'{sample}'/'segments.fa')
+    params:
+        sample="{sample}"
+    run:
+        with open(input.jsonfile) as f:
+            contigs_dict = json.load(f)
+        segments = contigs_dict[params.sample]
+        subset_fasta_file(input.fasta,output.outfile,segments)
+
+rule _test_segments:
+    input:
+        expand(str(MAPPING_FP/'contigs'/'{sample}'/'segments.fa'), sample=Samples.keys())
+
+rule bwa_index:
+    """ Make bwa index for the all the segments per sample """
+    input:
+        bwa = str(Cfg['mapping']['bwa_fp']/'bwa'),
+        segments = str(MAPPING_FP/'contigs'/'{sample}'/'segments.fa')
+    output:
+        bwa_index_files('segments.fa',str(MAPPING_FP/'contigs'/'{sample}'))
+    shell:
+        "{input.bwa} index {input.segments}"
+
+rule _test_bwa_index:
+    input:
+        expand(str(MAPPING_FP/'contigs'/'{sample}'/'segments.fa.{index}'), 
+        sample=Samples.keys(), index=['sa','amb','ann','pac','bwt'])
+
+rule bwa_align:
+    """ Aligning reads to segments """
+    input:
+        bwa = str(Cfg['mapping']['bwa_fp']/'bwa'),
+
+        # we should really use the reads generate the contigs for the mapping
+        reads = expand(str(QC_FP/'decontam'/'{sample}_{rp}.fastq'),rp = ['R1','R2'], sample="{sample}"),
+
+        indices = bwa_index_files('segments.fa',str(MAPPING_FP/'contigs'/'{sample}') )
+    output:
+        str(MAPPING_FP/'contigs'/'{sample}'/'reads.sam')
+    threads:
+        Cfg['mapping']['threads']
+    params:
+        index = str(MAPPING_FP/'contigs'/'{sample}'/'segments.fa')
+    shell:
+        "{input.bwa} mem {params.index} {input.reads[0]} {input.reads[1]}> {output}"
+
+rule _test_bwa:
+    input:
+        expand(str(MAPPING_FP/'contigs'/'{sample}'/'reads.sam'), sample=Samples.keys())
+
+rule sam_to_bam:
+    input: "{fname}.sam"
+    output: "{fname}.bam"
+    threads: Cfg['mapping']['threads']
+    shell: "samtools view -@ {threads} -bS {input} > {output}"
+
+rule sort_bam:
+    input: "{fname}.bam"
+    output: "{fname}.sorted.bam"
+    threads: Cfg['mapping']['threads']
+    shell: "samtools sort -@ {threads} -o {output} {input}"
+
+rule index_bam:
+    #message: "Indexing {input} with samtools"
+    input: "{fname}.sorted.bam"
+    output: "{fname}.sorted.bam.bai"
+    shell: "samtools index {input} {output}"
+
+rule bam_mpileup:
+    """ Calling variants with samtools and bcftools """
+    input:
+        bam = str(MAPPING_FP/'contigs'/'{sample}'/'reads.sorted.bam'),
+        contig = str(MAPPING_FP/'contigs'/'{sample}'/'segments.fa')
+    output: 
+        str(MAPPING_FP/'contigs'/'{sample}'/'reads.raw.bcf')
+    shell: 
+        "samtools mpileup -gf {input.contig} {input.bam} | bcftools call -Ob -v -c - > {output}"
+
+rule _test_mpileup:
+    input:
+        expand(str(MAPPING_FP/'contigs'/'{sample}'/'reads.raw.bcf'), sample=Samples.keys())
+
+rule igv_snapshot_reads_contig:
+    """ Create an alignment image for each selected segment with IGV """
+    input:
+        igv_fp = str(Cfg['mapping']['igv_fp']),
+        contig_fp = str(MAPPING_FP/'contigs'/'contigs_tomap.json'),
+        genome = str(MAPPING_FP/'contigs'/'{sample}'/'segments.fa'),
+        bam = str(MAPPING_FP/'contigs'/'{sample}'/'reads.sorted.bam'),
+        bai = str(MAPPING_FP/'contigs'/'{sample}'/'reads.sorted.bam.bai'),
+        convert_fp = str(Cfg['mapping']['imagemagick_fp']/'convert')
+    params:
+        sample = "{sample}",
+        igv_prefs = Cfg['mapping']['igv_prefs']
+    output:
+        pdf = str(MAPPING_FP/'contigs'/'{sample}_aln.pdf')
+    run:
+        with open(input.contig_fp) as f:
+            contigs_dict = json.load(f)
+        
+        segments = contigs_dict[params.sample]
+
+        for segment in segments:
+            output_png = "%s/%s.aln.png" % (os.path.dirname(input.bam), segment)
+            
+            igv.render(input.genome, [input.bam], output_png, segment, input.igv_fp, "script", params.igv_prefs)
+        
+        cmd = "%s %s/*.png" % (input.convert_fp, os.path.dirname(input.bam))
+        
+        shell(cmd + " {output.pdf}")
+        
+rule _test_igv_contigs:
+    input:
+        expand(str(MAPPING_FP/'contigs'/'{sample}_aln.pdf'), sample=Samples.keys())

@@ -54,8 +54,8 @@ rule select_contigs:
         ret = dict()
         for file in input.files:
             #- KEY: sample
-            sample_assembly = os.path.split(os.path.dirname(file))[1]
-            sample = sample_assembly.split("_")[0]
+            sample = os.path.basename(os.path.dirname(file)).replace("_assembly", "")
+            
             
             #- VALUE: list of selected top n contigs
             ret[sample] = top_n_contig(file, params.top_contig)

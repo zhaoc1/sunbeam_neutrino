@@ -1,5 +1,5 @@
 echo "Installing ImageMagick ..."
-install_diamond(){
+install_imagemagick(){
     DIR=$HOME/$SUNBEAM_ENV_NAME/local
     wget https://www.imagemagick.org/download/ImageMagick.tar.gz -P $DIR
     tar -xzf $DIR/ImageMagick.tar.gz -C $DIR

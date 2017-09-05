@@ -87,7 +87,7 @@ blastdbs:
 #    fungi:
 #       fungiGenomes/ncbi_fungi_20170330.fasta
 #    viral:
-#       viralGenomes/ncbi_viral_20170505.fasta
+#       viralGenomes/ncbi_nucl_viral_20170505.fasta
     card:
        card/nucleotide_fasta_protein_homolog_model.fasta
   protein:
@@ -116,3 +116,11 @@ mapping:
   bileacid_fp: "/mnt/isilon/microbiome/analysis/biodata/bileacidsIndexes"
   glyco_fp: "/mnt/isilon/microbiome/analysis/biodata/diamondIndexes"
   diamond_fp: "/home/zhaoc1/sunbeam_neutrino/local/diamond"
+  # contigs.rules
+  igv_fp: "/home/zhaoc1/sunbeam/local/IGV/igv.sh"
+  igv_prefs: {ENABLE_ANTIALIASING: true, NAME_PANEL_WIDTH: 360, SAM.MAX_VISIBLE_RANGE: 1000}
+  keep_unaligned: false
+  bwa_fp: "/home/zhaoc1/sunbeam/local/bwa"
+  top_contig: 2
+  imagemagick_fp: "/home/zhaoc1/sunbeam_neutrino/local/ImageMagick/bin"
+

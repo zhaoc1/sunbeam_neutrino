@@ -31,7 +31,7 @@
     },
     "cap3" :
     {
-        "h_vmeme": "500G",
+        "h_vmem": "500G",
         "mem_free": "250G",
         "m_mem_free": "200G"
     },

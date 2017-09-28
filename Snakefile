@@ -85,6 +85,7 @@ include: "rules/mapping/kegg.rules"
 include: "rules/mapping/bile_acid.rules"
 include: "rules/mapping/abx_resist.rules"
 include: "rules/mapping/glycoside.rules"
+include: "rules/mapping/contigs.rules"
 
 # ---- Rule all: run all targets
 rule all:

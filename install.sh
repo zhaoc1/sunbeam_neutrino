@@ -98,7 +98,8 @@ install_igv() {
     command -v igv >/dev/null 2>&1 || { echo "IGV still isn't on the path, try installing manually"; exit 1; }
 }
 
-command -v igv >/dev/null 2>&1 || { echo "IGV not installed, installing now"; install_igv; }
+#command -v igv >/dev/null 2>&1 || { echo "IGV not installed, installing now"; install_igv; }
+install_igv;
 
 echo "To get started, ensure ${PREFIX}/bin is in your path and run 'source activate $SUNBEAM_ENV_NAME'"
 

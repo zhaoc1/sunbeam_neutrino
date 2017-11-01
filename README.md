@@ -11,7 +11,7 @@ bash install.sh
 
 To updated the requirements file (after installing some new package):
 ```
-conda list --name sunbeam --explicit > requirements.txt
+conda list --name sunbeam_neutrino --explicit > requirements.txt
 ```
 
 ### Functional testing

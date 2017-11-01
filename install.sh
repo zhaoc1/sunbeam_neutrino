@@ -77,7 +77,8 @@ install_imagemagick(){
     make
     make install
     command -v $DIR/ImageMagick/bin/convert > /dev/null 2>&1 || \
-    { echo "ImageMagick hasn't been properlly install, try installing manually"; exit 1;}}
+    { echo "ImageMagick hasn't been properlly install, try installing manually"; exit 1;}
+}
 
 if [ ! -d local/ImageMagick ]; then
     install_imagemagick;

@@ -32,36 +32,22 @@ conda env list | grep -Fxq $SUNBEAM_ENV_NAME || {
 
 
 echo "Now it is time to install some softwares to local/"
+
 echo "Installing metaphlan2 ..."
 install_metaphlan2(){
     DIR=$HOME/$SUNBEAM_ENV_NAME/local
     METAPHLAN_VERSION=40d1bf693089
-    wget https://bitbucket.org/biobakery/metaphlan2/get/default.zip -P $DIR
-    unzip $DIR/default.zip -d $DIR
+    #wget https://bitbucket.org/biobakery/metaphlan2/get/default.zip -P $DIR
+    #unzip $DIR/default.zip -d $DIR
     # create a empty bowtie2 index prefix file for sunbeamlib path conversion
     touch $DIR/biobakery-metaphlan2-$METAPHLAN_VERSION/db_v20/mpa_v20_m200
-    rm $DIR/default.zip
+    #rm $DIR/default.zip
     command -v $DIR/biobakery-metaphlan2-$METAPHLAN_VERSION/metaphlan2.py > /dev/null 2>&1 || \
     { echo "Metaphlan2 hasn't been properlly install, try installing manually"; exit 1; }
     }
 
-if [ ! -f local/default.zip ]; then
+if [ ! -f local/biobakery-metaphlan2-40d1bf693089 ]; then
     install_metaphlan2;
-fi
-
-
-echo "Installing RAPSearch2 ..."
-install_rapsearch2(){
-    DIR=$HOME/$SUNBEAM_ENV_NAME/local/RAPSearch2
-    git clone https://github.com/zhaoyanswill/RAPSearch2.git $DIR
-    cd $DIR
-    ./install
-    command -v $DIR/bin/rapsearch > /dev/null 2>&1 || \
-    { echo "RAPSearch2 hasn't been properlly install, try installing manually"; exit 1; }
-    }
-
-if [ ! -d local/RAPSearch2 ]; then
-    install_rapsearch2;
 fi
 
 
@@ -79,20 +65,39 @@ if [ ! -d local/CAP3 ]; then
     install_cap3;
 fi
 
-echo "Installing diamond ..."
-install_diamond(){
+echo "Installing ImageMagick ..."
+install_imagemagick(){
     DIR=$HOME/$SUNBEAM_ENV_NAME/local
-    wget http://github.com/bbuchfink/diamond/releases/download/v0.9.6/diamond-linux64.tar.gz -P $DIR
-    tar -xzf $DIR/diamond-linux64.tar.gz -C $DIR
-    rm $DIR/diamond-linux64.tar.gz
-    command -v $DIR/diamond > /dev/null 2>&1 || \
-    { echo "Diamond hasn't been properlly install, try installing manually"; exit 1; }
-    }
+    wget https://www.imagemagick.org/download/ImageMagick.tar.gz -P $DIR
+    tar -xzf $DIR/ImageMagick.tar.gz -C $DIR
+    rm $DIR/ImageMagick.tar.gz
+
+    cd $DIR/ImageMagick-7.0.7-9
+    ./configure --prefix $DIR/ImageMagick
+    make
+    make install
+    command -v $DIR/ImageMagick/bin/convert > /dev/null 2>&1 || \
+    { echo "ImageMagick hasn't been properlly install, try installing manually"; exit 1;}}
+
+if [ ! -d local/ImageMagick ]; then
+    install_imagemagick;
+fi
+
+echo "Installing igv ..."
+install_igv() {
+    DIR=$(readlink -f $(dirname $BASH_SOURCE))/local
+    IGV_VER=2.3.68
+    wget http://data.broadinstitute.org/igv/projects/downloads/2.3/IGV_${IGV_VER}.zip
+    unzip IGV_${IGV_VER}.zip -d $DIR
+    ln -s IGV_$IGV_VER $DIR/IGV
+    # A symlink will confuse igv.sh so I'm using a wrapper script instead
+    echo -e "#!/bin/bash\ncd $DIR/IGV && ./igv.sh \$@" > $DIR/IGV/igv
+    chmod +x $DIR/IGV/igv
+    export PATH=$DIR/IGV:$PATH
+    command -v igv >/dev/null 2>&1 || { echo "IGV still isn't on the path, try installing manually"; exit 1; }
 }
 
-if [ ! -d local/diamond ]; then
-    install_diamond;
-fi
+command -v igv >/dev/null 2>&1 || { echo "IGV not installed, installing now"; install_igv; }
 
 echo "To get started, ensure ${PREFIX}/bin is in your path and run 'source activate $SUNBEAM_ENV_NAME'"
 

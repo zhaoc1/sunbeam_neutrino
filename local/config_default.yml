@@ -18,7 +18,7 @@ all:
   root: "{PROJECT_FP}"
   data_fp: "data_files"
   output_fp: "sunbeam_output"
-  filename_fmt: "{{sample}}_{{rp}}.fastq"
+  filename_fmt: "PCMP_{{sample}}_{{rp}}.fastq"
   subcores: 4
   exclude: []
 
@@ -85,7 +85,7 @@ blastdbs:
     bacteria:
       bacteria.fa
 #    card:
-#      card/nucl_homolog.fasta
+#      card/nucleotide_fasta_protein_homolog_model.fasta
   protein:
     card:
       card/protein_fasta_protein_homolog_model.fasta
@@ -93,12 +93,20 @@ blastdbs:
 mapping:
   suffix: mapping
   threads: 4
-  rapsearch_fp: "local/RAPSearch2/bin"
-  kegg_fp: ""
-  kegg_idx_fp: ""
-  kegg_to_ko_fp: ""
-  genomes_fp: ""
-  bileacid_fp: ""
-  Rsciprt_fp: "local/bin"
-  igv_fp: ""
-
+  rapsearch_fp: ""
+  kegg_fp: "indexes/kegg"
+  kegg_idx_fp: "indexes/keggRAP"
+  kegg_to_ko_fp: "indexes/kegg2ko"
+  genomes_fp: "indexes/fungalIndexes"
+  bileacid_fp: "indexes/bileAcidsIndexes"
+  Rscript_fp: "local/bin"
+  # contigs.rules
+  igv_fp: "local/IGV/igv.sh"
+  igv_prefs:
+    ENABLE_ANTIALIASING: true
+    NAME_PANEL_WIDTH: 360
+    SAM.MAX_VISIBLE_RANGE: 1000
+  keep_unaligned: false
+  top_contig: 1
+  imagemagick_fp: "local/ImageMagick/bin"
+  glyco_fp: "indexes/diamondIndexes"

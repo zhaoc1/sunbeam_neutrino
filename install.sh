@@ -37,18 +37,17 @@ echo "Installing metaphlan2 ..."
 install_metaphlan2(){
     DIR=$HOME/$SUNBEAM_ENV_NAME/local
     METAPHLAN_VERSION=40d1bf693089
+    # 20171101: temporary fix for broken metaplan2 download link
     #wget https://bitbucket.org/biobakery/metaphlan2/get/default.zip -P $DIR
-    #unzip $DIR/default.zip -d $DIR
+    unzip $DIR/default.zip -d $DIR
     # create a empty bowtie2 index prefix file for sunbeamlib path conversion
     touch $DIR/biobakery-metaphlan2-$METAPHLAN_VERSION/db_v20/mpa_v20_m200
     #rm $DIR/default.zip
     command -v $DIR/biobakery-metaphlan2-$METAPHLAN_VERSION/metaphlan2.py > /dev/null 2>&1 || \
     { echo "Metaphlan2 hasn't been properlly install, try installing manually"; exit 1; }
-    }
+}
 
-if [ ! -f local/biobakery-metaphlan2-40d1bf693089 ]; then
-    install_metaphlan2;
-fi
+install_metaphlan2;
 
 
 echo "Installing CAP3 ..."
@@ -61,9 +60,7 @@ install_cap3(){
     { echo "CAP3 hasn't been properlly install, try installing manually"; exit 1; }
     }
 
-if [ ! -d local/CAP3 ]; then
-    install_cap3;
-fi
+install_cap3;
 
 echo "Installing ImageMagick ..."
 install_imagemagick(){
@@ -88,7 +85,7 @@ echo "Installing igv ..."
 install_igv() {
     DIR=$(readlink -f $(dirname $BASH_SOURCE))/local
     IGV_VER=2.3.68
-    wget http://data.broadinstitute.org/igv/projects/downloads/2.3/IGV_${IGV_VER}.zip
+    wget http://data.broadinstitute.org/igv/projects/downloads/2.3/IGV_${IGV_VER}.zip -P $DIR
     unzip IGV_${IGV_VER}.zip -d $DIR
     ln -s IGV_$IGV_VER $DIR/IGV
     # A symlink will confuse igv.sh so I'm using a wrapper script instead
@@ -98,7 +95,6 @@ install_igv() {
     command -v igv >/dev/null 2>&1 || { echo "IGV still isn't on the path, try installing manually"; exit 1; }
 }
 
-#command -v igv >/dev/null 2>&1 || { echo "IGV not installed, installing now"; install_igv; }
 install_igv;
 
 echo "To get started, ensure ${PREFIX}/bin is in your path and run 'source activate $SUNBEAM_ENV_NAME'"

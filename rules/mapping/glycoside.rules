@@ -17,23 +17,23 @@ rule build_diamonddb:
         lambda wildcards: DIAMOND_DICT[wildcards.db]
     output:
         expand(str(DIAMOND_DIR/'{{db}}.fasta.{index}'), index=['dmnd'])
-    params:
-        diamond = str(Cfg['mapping']['diamond_fp'])
+    #params:
+        #diamond = str(Cfg['mapping']['diamond_fp'])
     shell:
-        "{params.diamond} makedb --in {input} -d {input}"
+        "diamond makedb --in {input} -d {input}"
 
 rule diamond_R1:
     input:
         read = str(MAPPING_FP/'R1'/'{sample}_R1.fasta'),
         db = lambda wildcard: DIAMOND_DICT[wildcard.db],
-        diamond = str(Cfg['mapping']['diamond_fp'])
+        #diamond = str(Cfg['mapping']['diamond_fp'])
     output:
         str(MAPPING_FP/'diamond'/'{db}'/'{sample}_R1.m8')
     threads: 
         Cfg['mapping']['threads']
     shell:
         """
-        {input.diamond} blastx \
+        diamond blastx \
         --db {input.db} \
         --query {input.read} \
         --out {output} \

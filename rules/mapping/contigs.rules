@@ -86,12 +86,12 @@ rule _test_segments:
 rule bwa_index:
     """ Make bwa index for the all the segments per sample """
     input:
-        bwa = str(Cfg['mapping']['bwa_fp']/'bwa'),
+        #bwa = str(Cfg['mapping']['bwa_fp']/'bwa'),
         segments = str(MAPPING_FP/'contigs'/'{sample}'/'segments.fa')
     output:
         bwa_index_files('segments.fa',str(MAPPING_FP/'contigs'/'{sample}'))
     shell:
-        "{input.bwa} index {input.segments}"
+        "bwa index {input.segments}"
 
 rule _test_bwa_index:
     input:

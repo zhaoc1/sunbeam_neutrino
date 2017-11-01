@@ -83,10 +83,10 @@ fi
 
 echo "Installing igv ..."
 install_igv() {
-    DIR=$(readlink -f $(dirname $BASH_SOURCE))/local
+    DIR=$HOME/$SUNBEAM_ENV_NAME/local
     IGV_VER=2.3.68
     wget http://data.broadinstitute.org/igv/projects/downloads/2.3/IGV_${IGV_VER}.zip -P $DIR
-    unzip IGV_${IGV_VER}.zip -d $DIR
+    unzip $DIR/IGV_${IGV_VER}.zip -d $DIR
     ln -s IGV_$IGV_VER $DIR/IGV
     # A symlink will confuse igv.sh so I'm using a wrapper script instead
     echo -e "#!/bin/bash\ncd $DIR/IGV && ./igv.sh \$@" > $DIR/IGV/igv
@@ -94,7 +94,6 @@ install_igv() {
     export PATH=$DIR/IGV:$PATH
     command -v igv >/dev/null 2>&1 || { echo "IGV still isn't on the path, try installing manually"; exit 1; }
 }
-
 install_igv;
 
 echo "To get started, ensure ${PREFIX}/bin is in your path and run 'source activate $SUNBEAM_ENV_NAME'"

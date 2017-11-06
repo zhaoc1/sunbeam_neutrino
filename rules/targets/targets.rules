@@ -42,6 +42,10 @@ TARGET_ASSEMBLY = (
 ## Pair reads
 TARGET_PAIR = expand(str(ASSEMBLY_FP/'paired'/'{sample}.assembled.fastq'), sample=Samples.keys())
 
+
+## megahit contigs
+TARGET_MEGAHIT = expand(str(ASSEMBLY_FP/'megahit'/'.save_{sample}'),sample = Samples.keys())
+
 ####################
 ## annotation
 ####################
@@ -89,3 +93,4 @@ TARGET_MAPPING = TARGET_PATH + TARGET_PATHREPORT + TARGET_BILE + TARGET_FUNGI + 
 
 ## TARGETS for sunbeam and sunbeam_neutrino
 TARGET_ALL = TARGET_QC + TARGET_CLASSIFY + TARGET_ASSEMBLY + TARGET_ANNOTATE + TARGET_MAPPING
+#TARGET_MEGAHIT

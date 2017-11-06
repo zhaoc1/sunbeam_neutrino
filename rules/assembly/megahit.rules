@@ -1,0 +1,69 @@
+# cross assembly
+# requires megahit
+# Chunyu Zhao 20171016
+
+rule fq2_paired_fa:
+    # 20161016: megahit only true paired reads
+    input:
+        r1 = str(QC_FP/'decontam'/'{sample}_R1.fastq'),
+        r2 = str(QC_FP/'decontam'/'{sample}_R2.fastq')
+    output:
+        str(ASSEMBLY_FP/'paired_reads'/'{sample}_R1.fasta'),
+        str(ASSEMBLY_FP/'paired_reads'/'{sample}_R2.fasta')
+    params:
+        output_dir = str(ASSEMBLY_FP/'paired_reads'),
+        script = str(Cfg['assembly']['fq2fa_fp'])
+    shell:
+        """
+        python {params.script} --forward-reads {input.r1} \
+            --reverse-reads {input.r2} \
+            --output-dir {params.output_dir}
+        """
+
+rule _all_fas:
+    input:
+        expand(str(ASSEMBLY_FP/'paired_reads'/'{sample}_{rp}.fasta'),sample = Samples.keys(), rp = ['R1','R2'])
+
+#- I did something in bash following the assembly-based mgs (20171016)
+
+rule run_megahit:
+    # added on 20171027, since the completeness for idbaud and megathit contigs are different
+    input:
+        r1 = str(ASSEMBLY_FP/'paired_reads'/'{sample}_R1.fasta'),
+        r2 = str(ASSEMBLY_FP/'paired_reads'/'{sample}_R2.fasta')
+    output:
+        str(ASSEMBLY_FP/'megahit'/'.save_{sample}')
+    params:
+        output_dir = str(ASSEMBLY_FP/'megahit'/'{sample}_asm')
+    shell:
+        """
+        megahit -1 {input.r1} -2 {input.r2} -o {params.output_dir} && touch {output}
+        """
+rule _all_megahit:
+    input:
+        expand(str(ASSEMBLY_FP/'megahit'/'.save_{sample}'),sample = Samples.keys())
+
+# 20171106 add megahit contig annotation for igram1
+
+#TARGET_MEGAHIT = expand(str(ASSEMBLY_FP/'megahit'/'.save_{sample}'),sample = Samples.keys())
+
+rule blastn_contigs:
+    input:
+        str(ASSEMBLY_FP/'megahit'/'{sample}_asm'/'final.contigs.fa')
+    output:
+        str(ASSEMBLY_FP/'blastn'/'{db}'/'{sample}.blastn')
+    params:
+        db=lambda wildcard: Blastdbs['nucl'][wildcard.db] 
+    threads:
+        Cfg['blast']['threads']
+    shell:
+        """
+        blastn -query {input} -db {params.db} -outfmt 6 \
+               -num_threads 8 -evalue 1e-10  -max_target_seqs 1 -out {output}
+        """
+
+rule _all_annot:
+     input:
+        expand(str(ASSEMBLY_FP/'blastn'/'bacteria'/'{sample}.blastn'), sample = Samples.keys())
+
+

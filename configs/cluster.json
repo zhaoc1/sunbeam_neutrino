@@ -59,7 +59,25 @@
         "mem_free" : "50G",
         "m_mem_free" : "20G"
     },
+    "fq2_paired_fa" :
+    {
+        "h_vmem" : "100G",
+        "mem_free" : "50G",
+        "m_mem_free" : "20G"
+    },
     "blastx" :
+    {
+        "h_vmem" : "60G",
+        "mem_free" : "50G",
+        "m_mem_free" : "20G"
+    },
+    "run_megahit" :
+    {
+        "h_vmem" : "1000G",
+        "mem_free" : "300G",
+        "m_mem_free" : "200G"
+    },
+    "run_hmm" :
     {
         "h_vmem" : "60G",
         "mem_free" : "50G",

@@ -30,10 +30,8 @@ Cfg = check_config(config)
 Blastdbs = process_databases(Cfg['blastdbs'])
 Samples = build_sample_list(Cfg['all']['data_fp'], Cfg['all']['filename_fmt'], Cfg['all']['exclude'])
 
-
 # ---- Change your workdir to output_fp
 workdir: str(Cfg['all']['output_fp'])
-
 
 # ---- Set up output paths for the various steps
 QC_FP = output_subdir(Cfg, 'qc')
@@ -41,7 +39,7 @@ ASSEMBLY_FP = output_subdir(Cfg, 'assembly')
 ANNOTATION_FP = output_subdir(Cfg, 'annotation')
 CLASSIFY_FP = output_subdir(Cfg, 'classify')
 MAPPING_FP = output_subdir(Cfg, 'mapping')
-
+ANVIO_FP = output_subdir(Cfg, 'anvio')
 
 # ---- Fungal genome mapping
 GENOME_DIR = Cfg['mapping']['genomes_fp']
@@ -78,14 +76,19 @@ include: "rules/targets/targets.rules"
 # ---- Classifier rules
 include: "rules/classify/metaphlan.rules"
 
+include: "rules/assembly/megahit.rules"
+
 # ---- Mapping rules
 include: "rules/mapping/blast_db.rules"
-include: "rules/mapping/fungi.rules"
+#include: "rules/mapping/fungi.rules"
 include: "rules/mapping/kegg.rules"
 include: "rules/mapping/bile_acid.rules"
 include: "rules/mapping/abx_resist.rules"
 include: "rules/mapping/glycoside.rules"
 #include: "rules/mapping/contigs.rules"
+
+# ---- Anvi'o rules
+include: "rules/anvio/compl.rules"
 
 # ---- Rule all: run all targets
 rule all:

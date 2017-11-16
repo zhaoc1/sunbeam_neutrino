@@ -39,6 +39,7 @@ rule run_megahit:
         """
         megahit -1 {input.r1} -2 {input.r2} -o {params.output_dir} && touch {output}
         """
+
 rule _all_megahit:
     input:
         expand(str(ASSEMBLY_FP/'megahit'/'.save_{sample}'),sample = Samples.keys())
@@ -66,4 +67,36 @@ rule _all_annot:
      input:
         expand(str(ASSEMBLY_FP/'blastn'/'bacteria'/'{sample}.blastn'), sample = Samples.keys())
 
+# Chunyu Zhao 20171017
+# for anvio pipeline map samples to cross assembled contigs
+
+rule bt2_align:
+    input:
+        genome = str(ASSEMBLY_FP/'megahit_asm_20171016'/'contigs.fa'),
+        r1 = str(ASSEMBLY_FP/'paired_reads'/'{sample}_R1.fasta'),
+        r2 = str(ASSEMBLY_FP/'paired_reads'/'{sample}_R2.fasta')
+    output:
+        sam=str(ASSEMBLY_FP/'04_MAPPING'/'{sample}.sam'),
+        bam=str(ASSEMBLY_FP/'04_MAPPING'/'{sample}-RAW.bam')
+    threads:
+        Cfg['mapping']['threads']
+    params:
+        index = str(ASSEMBLY_FP/'04_MAPPING'/'contigs')
+    shell:
+        """
+        bowtie2 -f --threads {threads} -x {params.index} -1 {input.r1} -2 {input.r2} -S {output.sam}
+        samtools view -bS {output.sam} > {output.bam}
+        """
+
+rule anvi_init_bam:
+    input:
+        str(ASSEMBLY_FP/'04_MAPPING'/'{sample}-RAW.bam')
+    output:
+        str(ASSEMBLY_FP/'04_MAPPING'/'{sample}.bam')
+    shell:
+        " anvi-init-bam {input} -o {output}"
+
+rule _all_init_bam:
+    input:
+         expand(str(ASSEMBLY_FP/'04_MAPPING'/'{sample}.bam'), sample=Samples.keys())
 

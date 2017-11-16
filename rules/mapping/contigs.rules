@@ -66,11 +66,13 @@ rule select_contigs:
 #- now use the terminology of reference genome with IGV (referred to Jesse)
 rule segments_fasta:
     input:
-        fasta = str(ASSEMBLY_FP/'{sample}_assembly'/'final-contigs.fa'),
+        #fasta = str(ASSEMBLY_FP/'{sample}_assembly'/'final-contigs.fa'),
+        fasta = str(ASSEMBLY_FP/'megahit'/'{sample}_asm'/'final.contigs.fa'),
         jsonfile = str(MAPPING_FP/'contigs'/'contigs_tomap.json')
     output:
         # one sample on selected contig fasta file
-        outfile = str(MAPPING_FP/'contigs'/'{sample}'/'segments.fa')
+        #outfile = str(MAPPING_FP/'contigs'/'{sample}'/'segments.fa')
+        outfile = str(MAPPING_FP/'contigs'/'{sample}.fa')
     params:
         sample="{sample}"
     run:
@@ -81,7 +83,7 @@ rule segments_fasta:
 
 rule _test_segments:
     input:
-        expand(str(MAPPING_FP/'contigs'/'{sample}'/'segments.fa'), sample=Samples.keys())
+        expand(str(MAPPING_FP/'contigs'/'{sample}.fa'), sample=Samples.keys())
 
 rule bwa_index:
     """ Make bwa index for the all the segments per sample """

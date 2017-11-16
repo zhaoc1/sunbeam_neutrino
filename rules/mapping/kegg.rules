@@ -21,7 +21,7 @@ rule path_finder:
         ko = str(MAPPING_FP/'pathfinder'/'{sample}.ko')
     params:
         output_dir = str(MAPPING_FP/'pathfinder'),
-        rapsearch = str(Cfg['mapping']['rapsearch_fp']/'rapsearch')
+        #rapsearch = str(Cfg['mapping']['rapsearch_fp']/'rapsearch')
     threads: 
         Cfg['mapping']['threads']
     shell:
@@ -33,7 +33,7 @@ rule path_finder:
         --kegg_fp {Cfg[mapping][kegg_fp]} \
         --kegg_idx_fp {Cfg[mapping][kegg_idx_fp]} \
         --kegg_to_ko_fp {Cfg[mapping][kegg_to_ko_fp]} \
-        --rap_search_fp {params.rapsearch}
+        --rap_search_fp rapsearch
         """
 
 def parse_results(fp, input_suffix):

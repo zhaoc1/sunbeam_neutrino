@@ -20,4 +20,7 @@ pandas
 seqtk
 bedtools
 bowtie2
-
+rapsearch
+megahit
+cap3
+diamond

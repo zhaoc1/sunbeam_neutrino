@@ -6,6 +6,7 @@ import re
 #- Chunyu Zhao 20171016 for igram1 ecoli megahit assembly
 #- megahit take paired-end reads
 
+
 class FastqRead(object):
     def __init__(self, read):
         self.desc, self.seq, self.qual = read

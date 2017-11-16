@@ -85,7 +85,7 @@ include: "rules/mapping/kegg.rules"
 include: "rules/mapping/bile_acid.rules"
 include: "rules/mapping/abx_resist.rules"
 include: "rules/mapping/glycoside.rules"
-include: "rules/mapping/contigs.rules"
+#include: "rules/mapping/contigs.rules"
 
 # ---- Anvi'o rules
 include: "rules/anvio/compl.rules"

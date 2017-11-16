@@ -18,7 +18,7 @@ rule fq2_paired_fa:
         python {params.script} --forward-reads {input.r1} \
             --reverse-reads {input.r2} \
             --output-dir {params.output_dir}
-    	"""
+        """
 
 rule _all_fas:
     input:
@@ -39,11 +39,14 @@ rule run_megahit:
         """
         megahit -1 {input.r1} -2 {input.r2} -o {params.output_dir} && touch {output}
         """
+
 rule _all_megahit:
     input:
         expand(str(ASSEMBLY_FP/'megahit'/'.save_{sample}'),sample = Samples.keys())
 
 # 20171106 add megahit contig annotation for igram1
+
+#TARGET_MEGAHIT = expand(str(ASSEMBLY_FP/'megahit'/'.save_{sample}'),sample = Samples.keys())
 
 rule blastn_contigs:
     input:
@@ -96,3 +99,4 @@ rule anvi_init_bam:
 rule _all_init_bam:
     input:
          expand(str(ASSEMBLY_FP/'04_MAPPING'/'{sample}.bam'), sample=Samples.keys())
+

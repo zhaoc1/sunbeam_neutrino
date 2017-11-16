@@ -24,10 +24,10 @@ TARGET_QC = TARGET_FASTQC + TARGET_DECONTAM + TARGET_QCREPORT
 ### Classify all reads
 TARGET_KRAKEN = [str(CLASSIFY_FP/'kraken'/'all_samples.tsv')]
 
-TARGET_CLASSIFY = TARGET_KRAKEN
-
 TARGET_METAPHLAN = expand(str(CLASSIFY_FP/'metaphlan'/'{sample}.txt'), sample = Samples.keys())
 TARGET_MATAPHLAN_REPORT = [str(CLASSIFY_FP/'taxonomic_assignments.tsv')]
+
+TARGET_CLASSIFY = TARGET_KRAKEN + TARGET_METAPHLAN + TARGET_MATAPHLAN_REPORT
 
 ####################
 ## assembly
@@ -41,6 +41,10 @@ TARGET_ASSEMBLY = (
            sample = Samples.keys()))
 ## Pair reads
 TARGET_PAIR = expand(str(ASSEMBLY_FP/'paired'/'{sample}.assembled.fastq'), sample=Samples.keys())
+
+
+## megahit contigs
+TARGET_MEGAHIT = expand(str(ASSEMBLY_FP/'megahit'/'.save_{sample}'),sample = Samples.keys())
 
 ####################
 ## annotation
@@ -84,8 +88,9 @@ db=DIAMOND_DICT.keys(), sample=Samples.keys())
 TARGET_CONTIGS = expand(str(MAPPING_FP/'contigs'/'{sample}_aln.pdf'), 
 sample=Samples.keys())
 
-TARGET_MAPPING = TARGET_PATH + TARGET_PATHREPORT + TARGET_BILE + TARGET_FUNGI + TARGET_CONTIGS
+TARGET_MAPPING = TARGET_PATH + TARGET_PATHREPORT + TARGET_BILE + TARGET_FUNGI + TARGET_ABX
+#+ TARGET_CONTIGS
 
 ## TARGETS for sunbeam and sunbeam_neutrino
 TARGET_ALL = TARGET_QC + TARGET_CLASSIFY + TARGET_ASSEMBLY + TARGET_ANNOTATE + TARGET_MAPPING
-
+#TARGET_MEGAHIT

@@ -41,8 +41,7 @@ python generate_dummy_data.py $TEMPDIR
 
 # Create a version of the config file customized for this tempdir
 CONFIG_FP=$TEMPDIR/local/config_default.yml
-sunbeam_init $TEMPDIR --template $CONFIG_FP | python prep_config_file.py  > $TEMPDIR/tmp_config.yml
-
+sunbeam_init $TEMPDIR --template $CONFIG_FP > $TEMPDIR/tmp_config.yml
 popd
 
 pushd $TEMPDIR

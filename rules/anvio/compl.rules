@@ -1,7 +1,10 @@
 # -*- mode: Snakemake -*-
 # Anvio-Binning-without-mapping-for-completeness
+# http://merenlab.org/2016/06/06/working-with-contigs-only/
 # Chunyu Zhao 
 # 10/25/2017
+
+#- todo: anvi-compute-completeness
 
 rule simply_names_idbaud:
     input:
@@ -103,4 +106,5 @@ rule blank_profile:
 rule _all_blank:
     input:
         expand(str(ANVIO_FP/'{sample}_assembly'/'dbs'/'contigs'/'PROFILE.db'), sample=Samples.keys())
+
 

@@ -39,7 +39,7 @@ ASSEMBLY_FP = output_subdir(Cfg, 'assembly')
 ANNOTATION_FP = output_subdir(Cfg, 'annotation')
 CLASSIFY_FP = output_subdir(Cfg, 'classify')
 MAPPING_FP = output_subdir(Cfg, 'mapping')
-#ANVIO_FP = output_subdir(Cfg, 'anvio')
+ANVIO_FP = output_subdir(Cfg, 'anvio')
 
 # ---- Fungal genome mapping
 GENOME_DIR = Cfg['mapping']['genomes_fp']
@@ -88,11 +88,11 @@ include: "rules/mapping/glycoside.rules"
 include: "rules/mapping/contigs.rules"
 
 # ---- Anvi'o rules
-#include: "rules/anvio/compl.rules"
+include: "rules/anvio/compl.rules"
 
 # ---- Rule all: run all targets
 rule all:
-    input: TARGET_ALL #TARGET_FUNGI#TARGET_MAPPING
+    input: TARGET_ALL
 
 rule samples:
     run:

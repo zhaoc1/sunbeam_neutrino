@@ -27,6 +27,19 @@ def review_output(raw_fp, output_fp):
         with open(output_fp, 'w') as f:
             f.write(revised_output_lines)
 
+rule gunzip_decontam:
+    input: 
+       r1 = str(QC_FP/'decontam'/'{sample}_R1.fastq.gz'),
+       r2 = str(QC_FP/'decontam'/'{sample}_R2.fastq.gz')
+    output:
+       r1 = str(QC_FP/'decontam'/'{sample}_R1.fastq'),
+       r2 = str(QC_FP/'decontam'/'{sample}_R2.fastq'),
+    shell:
+       """
+       gunzip -c {input.r1} > {output.r1}
+       gunzip -c {input.r2} > {output.r2}
+       """
+
 rule metaphlan_classify:
     input:
         r1 = str(QC_FP/'decontam'/'{sample}_R1.fastq'),

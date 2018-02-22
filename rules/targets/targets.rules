@@ -3,55 +3,14 @@
 # list the all input files for each step
 
 ####################
-## qc
-####################
-
-### Quality-control reads
-TARGET_FASTQC = expand(str(QC_FP/'paired'/'{sample}_{rp}_fastqc/fastqc_data.txt'), sample = Samples.keys(), rp = ['R1','R2'])
-
-### Remove host reads
-TARGET_DECONTAM = expand(str(QC_FP/'decontam'/'{sample}_{rp}.fastq'), sample = Samples.keys(), rp = ['R1', 'R2'])
-
-## QC report
-TARGET_QCREPORT = [str(QC_FP/'preprocess_summary.tsv'), str(QC_FP/'fastqc_quality.tsv')]
-
-TARGET_QC = TARGET_FASTQC + TARGET_DECONTAM + TARGET_QCREPORT
-
-####################
 ## classify
 ####################
 
-### Classify all reads
-TARGET_KRAKEN = [str(CLASSIFY_FP/'kraken'/'all_samples.tsv')]
-
+### Classify reads
 TARGET_METAPHLAN = expand(str(CLASSIFY_FP/'metaphlan'/'{sample}.txt'), sample = Samples.keys())
 TARGET_MATAPHLAN_REPORT = [str(CLASSIFY_FP/'taxonomic_assignments.tsv')]
+TARGET_CLASSIFY = TARGET_METAPHLAN + TARGET_MATAPHLAN_REPORT
 
-TARGET_CLASSIFY = TARGET_KRAKEN + TARGET_METAPHLAN + TARGET_MATAPHLAN_REPORT
-
-####################
-## assembly
-####################
-
-### Assemble contigs
-TARGET_ASSEMBLY = (
-    expand(str(ASSEMBLY_FP/'{sample}_assembly'/'final-contigs.fa'),
-           sample = Samples.keys()) +
-    expand(str(ASSEMBLY_FP/'{sample}_assembly'/'.save'),
-           sample = Samples.keys()))
-## Pair reads
-TARGET_PAIR = expand(str(ASSEMBLY_FP/'paired'/'{sample}.assembled.fastq'), sample=Samples.keys())
-
-
-## megahit contigs
-TARGET_MEGAHIT = expand(str(ASSEMBLY_FP/'megahit'/'.save_{sample}'),sample = Samples.keys())
-
-####################
-## annotation
-####################
-
-## Annotate all contigs
-TARGET_ANNOTATE = expand(str(ANNOTATION_FP/'summary'/'{sample}.tsv'), sample=Samples.keys())
 
 ####################
 ## mapping
@@ -82,15 +41,14 @@ TARGET_ABX = (
 
 ## GLYCOSIDE HYDROLASE
 TARGET_GLYCO = expand(str(MAPPING_FP/'diamond'/'{db}'/'{sample}_R1.m8'),
-db=DIAMOND_DICT.keys(), sample=Samples.keys())
+                      db=DIAMOND_DICT.keys(), sample=Samples.keys())
 
 ## MAP READS TO CONTIGS
 TARGET_CONTIGS = expand(str(MAPPING_FP/'contigs'/'{sample}_aln.pdf'), 
-sample=Samples.keys())
+                        sample=Samples.keys())
 
 TARGET_MAPPING = TARGET_PATH + TARGET_PATHREPORT + TARGET_BILE + TARGET_FUNGI + TARGET_ABX
-#+ TARGET_CONTIGS
 
-## TARGETS for sunbeam and sunbeam_neutrino
-TARGET_ALL = TARGET_QC + TARGET_CLASSIFY + TARGET_ASSEMBLY + TARGET_ANNOTATE + TARGET_MAPPING
-#TARGET_MEGAHIT
+
+## TARGETS for sunbeam_neutrino
+TARGET_ALL = TARGET_CLASSIFY + TARGET_PATH + TARGET_PATHREPORT

@@ -49,19 +49,6 @@ install_metaphlan2(){
 
 install_metaphlan2;
 
-
-echo "Installing CAP3 ..."
-install_cap3(){
-    DIR=$HOME/$SUNBEAM_ENV_NAME/local
-    wget http://seq.cs.iastate.edu/CAP3/cap3.linux.x86_64.tar -P $DIR
-    tar -xvf $DIR/cap3.linux.x86_64.tar -C $DIR
-    rm $DIR/cap3.linux.x86_64.tar
-    command -v $DIR/CAP3/cap3 > /dev/null 2>&1 || \
-    { echo "CAP3 hasn't been properlly install, try installing manually"; exit 1; }
-    }
-
-install_cap3;
-
 echo "Installing ImageMagick ..."
 install_imagemagick(){
     DIR=$HOME/$SUNBEAM_ENV_NAME/local
@@ -80,21 +67,6 @@ install_imagemagick(){
 if [ ! -d local/ImageMagick ]; then
     install_imagemagick;
 fi
-
-echo "Installing igv ..."
-install_igv() {
-    DIR=$HOME/$SUNBEAM_ENV_NAME/local
-    IGV_VER=2.3.68
-    wget http://data.broadinstitute.org/igv/projects/downloads/2.3/IGV_${IGV_VER}.zip -P $DIR
-    unzip $DIR/IGV_${IGV_VER}.zip -d $DIR
-    ln -s IGV_$IGV_VER $DIR/IGV
-    # A symlink will confuse igv.sh so I'm using a wrapper script instead
-    echo -e "#!/bin/bash\ncd $DIR/IGV && ./igv.sh \$@" > $DIR/IGV/igv
-    chmod +x $DIR/IGV/igv
-    export PATH=$DIR/IGV:$PATH
-    command -v igv >/dev/null 2>&1 || { echo "IGV still isn't on the path, try installing manually"; exit 1; }
-}
-install_igv;
 
 echo "To get started, ensure ${PREFIX}/bin is in your path and run 'source activate $SUNBEAM_ENV_NAME'"
 
